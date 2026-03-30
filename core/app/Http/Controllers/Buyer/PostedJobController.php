@@ -56,7 +56,7 @@ class PostedJobController extends Controller
 
         $notify[] = ['success', __('Job posted.')];
 
-        return to_route('firm.posted_jobs.show', $job->id)->withNotify($notify);
+        return to_route('buyer.firm.posted_jobs.show', $job->id)->withNotify($notify);
     }
 
     public function show(PostedJob $postedJob)
@@ -94,7 +94,7 @@ class PostedJobController extends Controller
         $this->savePostedJob($request, $postedJob);
         $notify[] = ['success', __('Job updated.')];
 
-        return to_route('firm.posted_jobs.show', $postedJob->id)->withNotify($notify);
+        return to_route('buyer.firm.posted_jobs.show', $postedJob->id)->withNotify($notify);
     }
 
     public function destroy(PostedJob $postedJob)
@@ -107,7 +107,7 @@ class PostedJobController extends Controller
         $postedJob->delete();
         $notify[] = ['success', __('Job removed.')];
 
-        return to_route('firm.posted_jobs.index')->withNotify($notify);
+        return to_route('buyer.firm.posted_jobs.index')->withNotify($notify);
     }
 
     public function markFilled(PostedJob $postedJob)

@@ -10,14 +10,14 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="{{ gs()->siteName($pageTitle) }}">
-    <meta name="application-name" content="Article Connect">
+    <meta name="application-name" content="{{ gs('site_name') ?? 'Article Connect' }}">
     {{--<!-- Google / Search Engine Tags -->--}}
     <meta itemprop="name" content="{{ gs()->siteName($pageTitle) }}">
     <meta itemprop="description" content="{{ @$seoContents->description ?? ($seo->description ?? '') }}">
     <meta itemprop="image" content="{{ $seoImage ?? (isset($seo->image) ? getImage(getFilePath('seo') .'/'. $seo->image) : '') }}">
     {{--<!-- Facebook Meta Tags -->--}}
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Article Connect">
+    <meta property="og:site_name" content="{{ gs('site_name') ?? 'Article Connect' }}">
     <meta property="og:title" content="{{ @$seoContents->social_title ?? ($seo->social_title ?? '') }}">
     <meta property="og:description" content="{{ @$seoContents->social_description ?? ($seo->social_description ?? '') }}">
     <meta property="og:image" content="{{ $seoImage ?? (isset($seo->image) ? getImage(getFilePath('seo') .'/'. $seo->image) : '') }}">

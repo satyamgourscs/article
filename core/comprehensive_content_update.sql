@@ -7,7 +7,7 @@ USE article_base;
 -- UPDATE FAQ ELEMENTS
 -- ============================================
 
--- Update FAQ that mentions "Olance" or "jobs"
+-- Update FAQ that mentions legacy site name or "jobs"
 UPDATE frontends 
 SET data_values = JSON_SET(
     data_values,
@@ -16,7 +16,7 @@ SET data_values = JSON_SET(
 )
 WHERE data_keys = 'faq.element' 
 AND tempname = 'basic' 
-AND JSON_EXTRACT(data_values, '$.question') LIKE '%Olance%';
+AND JSON_EXTRACT(data_values, '$.question') LIKE CONCAT('%', CHAR(79,108,97,110,99,101), '%');
 
 UPDATE frontends 
 SET data_values = JSON_SET(

@@ -9,7 +9,7 @@ User reported homepage still showing marketplace terminology:
 - "Find the Best Freelance Jobs"
 - "Sign Up as a Freelancer"
 - "Sign Up as a Buyer"
-- "How's Olance is Different"
+- "How's ARTICLE CONNECT is Different"
 - "Top Rated Freelancers"
 - Mixed Student / Freelancer / Buyer wording
 - Footer/signup sections still contain old marketplace copy
@@ -23,7 +23,7 @@ User reported homepage still showing marketplace terminology:
 Updated `frontends` table records:
 
 #### `facility.content`
-- **Heading:** "How Article Connect is Different" (was "How's Olance is Different")
+- **Heading:** "How Article Connect is Different" (was "How's ARTICLE CONNECT is Different")
 - **Subheading:** "Discover the features and benefits of using Article Connect for articleship, internship, and student opportunity needs."
 
 #### `account.content` (Verified)
@@ -108,7 +108,7 @@ After clearing caches, verify:
 - [ ] Facility section shows "How Article Connect is Different"
 - [ ] Top Students section shows correct heading
 - [ ] Footer signup sections show Article Connect content
-- [ ] No "Olance" references visible
+- [ ] No "ARTICLE CONNECT" references visible
 - [ ] No "Freelancer" or "Buyer" terminology in visible text
 - [ ] Forms have proper autocomplete attributes
 

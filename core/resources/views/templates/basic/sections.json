@@ -114,7 +114,7 @@
 
     "find_task": {
         "builder": true,
-        "name": "Find Job Section",
+        "name": "Find services section",
         "content": {
             "images": {
                 "image": {
@@ -194,7 +194,7 @@
 
     "top_freelancer": {
         "builder": true,
-        "name": "Top Rated Freelancers",
+        "name": "Top CA professionals",
         "content": {
             "heading": "text",
             "subheading": "text"

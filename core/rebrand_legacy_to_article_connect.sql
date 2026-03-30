@@ -2,11 +2,11 @@ USE article;
 
 -- ============================================
 -- PHASE 3: DATABASE/CMS BRANDING UPDATES
--- Replace all "Olance" references with "Article Connect"
+-- Replace legacy vendor branding with "Article Connect"
 -- ============================================
 
 -- 1. Update SEO Data (ID: 1)
--- Replace "Olance" in keywords, description, social_title, social_description
+-- Keywords, description, social_title, social_description
 UPDATE frontends 
 SET data_values = JSON_SET(
     data_values,
@@ -18,7 +18,7 @@ SET data_values = JSON_SET(
 WHERE id = 1 AND data_keys = 'seo.data';
 
 -- 2. Update FAQ Element (ID: 65)
--- Replace "Olance" in question and answer
+-- Question and answer
 UPDATE frontends 
 SET data_values = JSON_SET(
     data_values,
@@ -28,8 +28,7 @@ SET data_values = JSON_SET(
 WHERE id = 65 AND data_keys = 'faq.element';
 
 -- 3. Update Facility Content (ID: 90)
--- Replace "How's Olance is Different" with "How Article Connect is Different"
--- Replace "OLACE" typo with "Article Connect"
+-- Facility heading/subheading refresh
 UPDATE frontends 
 SET data_values = JSON_SET(
     data_values,
@@ -39,7 +38,7 @@ SET data_values = JSON_SET(
 WHERE id = 90 AND data_keys = 'facility.content';
 
 -- 4. Update Facility Element (ID: 92)
--- Replace "With Olance" with "With Article Connect"
+-- Facility element body text
 UPDATE frontends 
 SET data_values = JSON_SET(
     data_values,

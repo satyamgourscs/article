@@ -110,7 +110,7 @@ Visit http://localhost/article/ and check:
 - [ ] **Facility Section:** Shows "How Article Connect is Different"
 - [ ] **Top Students:** Shows "Top Students" heading
 - [ ] **Footer:** Shows updated signup sections
-- [ ] **No old terminology:** No "Freelancer", "Buyer", "Olance" visible
+- [ ] **No old terminology:** No "Freelancer", "Buyer", "ARTICLE CONNECT" visible
 
 ## Troubleshooting
 

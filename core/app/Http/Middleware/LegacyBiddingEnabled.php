@@ -21,7 +21,7 @@ class LegacyBiddingEnabled
         }
 
         if ($request->user('buyer')) {
-            return to_route('firm.posted_jobs.index')->withNotify([
+            return to_route('buyer.firm.posted_jobs.index')->withNotify([
                 ['warning', __('Project bidding is disabled. Use posted jobs instead.')],
             ]);
         }

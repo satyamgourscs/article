@@ -49,7 +49,7 @@ Completed comprehensive rebranding of the entire Laravel project from a freelanc
 
 ### General Settings
 1. **`general_settings` table**
-   - `site_name`: "Olance" → "Article Connect"
+   - `site_name`: "ARTICLE CONNECT" → "Article Connect"
 
 ### Pages Table
 2. **`pages` table**

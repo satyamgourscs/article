@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Frontend;
 use App\Models\Page;
 
+Route::get('/activate', function () {
+    return response('OK', 200);
+})->name('activate');
+
 Route::post('pusher/auth/{socketId}/{channelName}', 'SiteController@pusher')->name('pusher');
 
 /* Legacy paths → /student (panel) and /company (firm panel) */
@@ -178,4 +182,14 @@ Route::controller('SiteController')->group(function () {
 
     Route::get('/{slug}', 'pages')->name('pages');
     Route::get('/', 'index')->name('home');
+});
+
+Route::get('/dashboard', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->role == 'admin') return redirect()->route('admin.dashboard');
+        elseif ($user->role == 'company') return redirect()->route('buyer.home');
+        else return redirect()->route('user.home');
+    }
+    return redirect('/login');
 });

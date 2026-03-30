@@ -4,12 +4,12 @@
         <h5 class="mb-0">{{ __($pageTitle) }}</h5>
         <div class="d-flex flex-wrap gap-2">
             @if ($postedJob->status === \App\Models\PostedJob::STATUS_OPEN)
-                <form action="{{ route('firm.posted_jobs.filled', $postedJob) }}" method="POST" class="d-inline">
+                <form action="{{ route('buyer.firm.posted_jobs.filled', $postedJob) }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn--sm btn--base">@lang('Mark as filled')</button>
                 </form>
             @endif
-            <a href="{{ route('firm.posted_jobs.edit', $postedJob) }}" class="btn btn--sm btn-outline--base">@lang('Edit')</a>
+            <a href="{{ route('buyer.firm.posted_jobs.edit', $postedJob) }}" class="btn btn--sm btn-outline--base">@lang('Edit')</a>
         </div>
     </div>
     <p><strong>@lang('Status'):</strong> {{ __($postedJob->status) }}</p>
@@ -37,7 +37,7 @@
                         <td>{{ __($application->status) }}</td>
                         <td>
                             <form method="POST"
-                                action="{{ route('firm.posted_jobs.application.status', [$postedJob, $application]) }}"
+                                action="{{ route('buyer.firm.posted_jobs.application.status', [$postedJob, $application]) }}"
                                 class="d-flex flex-wrap gap-1 align-items-center">
                                 @csrf
                                 <select name="status" class="form-control form--control form--sm">
@@ -57,5 +57,5 @@
             </tbody>
         </table>
     </div>
-    <a href="{{ route('firm.posted_jobs.index') }}">← @lang('Back')</a>
+    <a href="{{ route('buyer.firm.posted_jobs.index') }}">← @lang('Back')</a>
 @endsection

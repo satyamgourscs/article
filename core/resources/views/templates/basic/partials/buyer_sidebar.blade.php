@@ -27,10 +27,10 @@
         
         <!-- ========= Sidebar Menu Start ================ -->
         <ul class="sidebar-menu-list">
-            <li class="sidebar-menu-list__item {{ menuActive(['buyer.home', 'firm.dashboard']) }}">
-                <a href="{{ route('firm.dashboard') }}" class="sidebar-menu-list__link">
+            <li class="sidebar-menu-list__item {{ menuActive('buyer.home') }}">
+                <a href="{{ route('buyer.home') }}" class="sidebar-menu-list__link">
                     <span class="icon"> <i class="las la-home"></i> </span>
-                    <span class="text">@lang('Dashboard') </span>
+                    <span class="text">@lang('Company Dashboard') </span>
                 </a>
             </li>
 
@@ -75,20 +75,20 @@
                     </a>
                 </li>
             @else
-                <li class="sidebar-menu-list__item has-dropdown {{ menuActive(['firm.posted_jobs.*', 'firm.post_job*']) }}">
+                <li class="sidebar-menu-list__item has-dropdown {{ menuActive(['buyer.firm.posted_jobs.*', 'buyer.firm.post_job*']) }}">
                     <a href="javascript:void(0)" class="sidebar-menu-list__link">
                         <span class="icon"><i class="las la-briefcase"></i></span>
                         <span class="text">@lang('Jobs')</span>
                     </a>
                     <div class="sidebar-submenu">
                         <ul class="sidebar-submenu-list">
-                            <li class="sidebar-submenu-list__item {{ menuActive('firm.posted_jobs.index') }}">
-                                <a href="{{ route('firm.posted_jobs.index') }}" class="sidebar-submenu-list__link">
+                            <li class="sidebar-submenu-list__item {{ menuActive('buyer.firm.posted_jobs.index') }}">
+                                <a href="{{ route('buyer.firm.posted_jobs.index') }}" class="sidebar-submenu-list__link">
                                     <span class="text">@lang('My posted jobs')</span>
                                 </a>
                             </li>
-                            <li class="sidebar-submenu-list__item {{ menuActive('firm.post_job') }}">
-                                <a href="{{ route('firm.post_job') }}" class="sidebar-submenu-list__link">
+                            <li class="sidebar-submenu-list__item {{ menuActive('buyer.firm.post_job') }}">
+                                <a href="{{ route('buyer.firm.post_job') }}" class="sidebar-submenu-list__link">
                                     <span class="text">@lang('Post job')</span>
                                 </a>
                             </li>

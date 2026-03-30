@@ -7724,7 +7724,7 @@ div [class*="col"]:last-child .account-item__thumb {
 }
 
 /* =============================== Brand Section Css End ======================= */
-/*=============== best freelancer section css start here ==============*/
+/*=============== featured CA Students carousel (.best-freelancer) ==============*/
 .best-freelancer-section {
   background-color: hsl(var(--base-d-500));
 }
@@ -7837,7 +7837,7 @@ div [class*="col"]:last-child .account-item__thumb {
   font-weight: 600;
 }
 
-/*=============== best freelancer section css end here ===============*/
+/*=============== featured CA Students carousel end ===============*/
 /*========== skill list css start here ==========*/
 .skill-list {
   display: -webkit-box;

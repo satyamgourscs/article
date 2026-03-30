@@ -4,7 +4,7 @@
 USE article_base;
 
 -- ============================================
--- UPDATE FACILITY CONTENT (How's Olance)
+-- UPDATE FACILITY CONTENT (legacy heading fix)
 -- ============================================
 
 UPDATE frontends 

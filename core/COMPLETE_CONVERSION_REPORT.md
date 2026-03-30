@@ -277,7 +277,7 @@ This report documents the **complete conversion** of the freelance marketplace p
 - [x] Facility section shows "How Article Connect is Different"
 - [x] Top Students section shows correct heading
 - [x] Footer signup sections show updated content
-- [x] No "Olance" or marketplace terminology visible
+- [x] No "ARTICLE CONNECT" or marketplace terminology visible
 
 ### Demo Data ✅
 - [x] 2 firms created and verified

@@ -4,7 +4,7 @@
         $isEdit = isset($job) && $job;
     @endphp
     <form method="POST"
-        action="{{ $isEdit ? route('firm.posted_jobs.update', $job) : route('firm.post_job.store') }}">
+        action="{{ $isEdit ? route('buyer.firm.posted_jobs.update', $job) : route('buyer.firm.post_job.store') }}">
         @csrf
         @if ($isEdit)
             @method('PUT')
@@ -76,7 +76,7 @@
             </div>
             <div class="col-12">
                 <button type="submit" class="btn btn--base">@lang('Save')</button>
-                <a href="{{ route('firm.posted_jobs.index') }}" class="btn btn-outline--dark">@lang('Cancel')</a>
+                <a href="{{ route('buyer.firm.posted_jobs.index') }}" class="btn btn-outline--dark">@lang('Cancel')</a>
             </div>
         </div>
     </form>

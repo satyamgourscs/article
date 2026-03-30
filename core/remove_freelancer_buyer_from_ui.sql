@@ -2,7 +2,7 @@ USE article;
 
 -- ============================================
 -- PHASE 3: DATABASE/CMS CONTENT UPDATES
--- Remove all visible Freelancer/Buyer/Olance from CMS content
+-- Remove all visible Freelancer/Buyer/legacy vendor wording from CMS content
 -- ============================================
 
 -- 1. About Content (ID: 24)

@@ -1,4 +1,5 @@
 # Project root
+/build/
 .DS_Store
 Thumbs.db
 *.swp
@@ -15,3 +16,7 @@ install_log.txt
 .env
 .env.backup
 .env.production
+
+# Archives
+project.zip
+*.zip

@@ -38,76 +38,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Skip installation check if already on installer pages
-        $currentPath = request()->path();
-        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-        $isInstallPage = strpos($currentPath, 'install') === 0 || 
-                         strpos($currentPath, 'installing') === 0 ||
-                         strpos($requestUri, '/install') !== false ||
-                         strpos($requestUri, '/installing') !== false ||
-                         request()->is('install*') || 
-                         request()->is('installing*');
-        
-        if ($isInstallPage) {
-            // On installer page, skip all installation checks
-            return;
-        }
-        
-        // Check installation status - use cache first, then verify with DB if needed
-        $isInstalled = (bool) cache()->get('SystemInstalled', false);
-
-        if (! $isInstalled) {
-            $envFilePath = base_path('.env');
-
-            if (file_exists($envFilePath)) {
-                $envContents = file_get_contents($envFilePath);
-                if (! empty($envContents)) {
-                    try {
-                        $keyTables = ['admins', 'users', 'general_settings'];
-                        $existingTables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
-                        $tableNames = array_map(function ($table) {
-                            return array_values((array) $table)[0];
-                        }, $existingTables);
-
-                        $hasKeyTables = count(array_intersect($keyTables, $tableNames)) == count($keyTables);
-
-                        if ($hasKeyTables) {
-                            $isInstalled = true;
-                            cache()->put('SystemInstalled', true, now()->addYears(10));
-                        }
-                    } catch (\Exception $e) {
-                        $isInstalled = false;
-                    }
-                }
-            } else {
-                try {
-                    $keyTables = ['admins', 'users', 'general_settings'];
-                    $existingTables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
-                    $tableNames = array_map(function ($table) {
-                        return array_values((array) $table)[0];
-                    }, $existingTables);
-
-                    $hasKeyTables = count(array_intersect($keyTables, $tableNames)) == count($keyTables);
-
-                    if ($hasKeyTables) {
-                        $isInstalled = true;
-                        cache()->put('SystemInstalled', true, now()->addYears(10));
-                    }
-                } catch (\Exception $e) {
-                    $isInstalled = false;
-                }
-            }
-        }
-
-        // If still not installed after all checks, redirect to installer
-        if (!$isInstalled) {
-            $script = $_SERVER['SCRIPT_NAME'] ?? '/index.php';
-            $dir = dirname(str_replace('\\', '/', $script));
-            $webBase = ($dir === '/' || $dir === '\\' || $dir === '.') ? '' : rtrim($dir, '/');
-            $installPath = ($webBase === '' ? '' : $webBase) . '/install';
-            header('Location: ' . $installPath);
-            exit;
-        }
+        // disabled install check — no redirect to /install or license activation
 
         $this->configurePublicUrls();
 

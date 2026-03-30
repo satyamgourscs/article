@@ -147,7 +147,7 @@ class BuyerController extends Controller
         notify($freelancer, 'FREELANCER_INVITATION', [
             'buyer' => $buyer->fullname,
             'active_post' => $totalActiveJobs,
-            'post_page' => route('firm.posted_jobs.index'),
+            'post_page' => route('buyer.firm.posted_jobs.index'),
 
         ]);
         $notify[] = ['success' => __('Invitation sent to the student.')];

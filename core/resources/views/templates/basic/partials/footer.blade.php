@@ -8,22 +8,32 @@
 <footer class="footer-area">
     <div class="container">
         <div class="footer-area__top">
-            <div class="sign-up-wrapper highlight">
-                <div class="sign-up-content">
-                    <h4 class="sign-up-content__title s-highlight" data-s-break="-1" data-s-length="1">
-                        {{ @$accountContent->freelancer_title ?? 'Sign Up as a Student' }}</h4>
-                    <p class="sign-up-content__desc">{{ @$accountContent->freelancer_content ?? 'Build your profile, apply for articleship and internship opportunities, and start your professional journey.' }}</p>
-                    <a href="{{ route('signup.student') }}" class="sign-up-content__btn btn btn--base">
-                        {{ @$accountContent->freelancer_button_name ?? 'Create Student Account' }}</a>
+            @if (! auth()->guard('web')->check() && ! auth()->guard('buyer')->check())
+                <div class="sign-up-wrapper highlight">
+                    <div class="sign-up-content">
+                        <h4 class="sign-up-content__title s-highlight" data-s-break="-1" data-s-length="1">
+                            {{ @$accountContent->freelancer_title ?? __('Sign Up as a CA Student') }}</h4>
+                        <p class="sign-up-content__desc">{{ @$accountContent->freelancer_content ?? __('Start your CA journey, connect with firms, and gain real articleship experience.') }}</p>
+                        <a href="{{ route('signup.student') }}" class="sign-up-content__btn btn btn--base">
+                            {{ @$accountContent->freelancer_button_name ?? __('CA Student signup') }}</a>
+                    </div>
+                    <div class="sign-up-content">
+                        <h4 class="sign-up-content__title s-highlight" data-s-break="-1" data-s-length="1">
+                            {{ @$accountContent->buyer_title ?? __('Sign Up as a CA Firm') }}</h4>
+                        <p class="sign-up-content__desc">{{ @$accountContent->buyer_content ?? __('Post articleship opportunities, hire CA students, and grow your firm.') }}</p>
+                        <a href="{{ route('signup.company') }}" class="sign-up-content__btn btn btn--base">
+                            {{ @$accountContent->buyer_button_name ?? __('CA Firm signup') }}</a>
+                    </div>
                 </div>
-                <div class="sign-up-content">
-                    <h4 class="sign-up-content__title s-highlight" data-s-break="-1" data-s-length="1">
-                        {{ @$accountContent->buyer_title ?? 'Sign Up as a Firm' }}</h4>
-                    <p class="sign-up-content__desc">{{ @$accountContent->buyer_content ?? 'Post articleship and internship opportunities, connect with talented students, and build your team.' }}</p>
-                    <a href="{{ route('signup.company') }}" class="sign-up-content__btn btn btn--base">
-                        {{ @$accountContent->buyer_button_name ?? 'Create Firm Account' }}</a>
+            @else
+                <div class="sign-up-wrapper highlight py-4 text-center">
+                    @auth('web')
+                        <a href="{{ route('user.home') }}" class="btn btn--base">@lang('Student Dashboard')</a>
+                    @elseauth('buyer')
+                        <a href="{{ route('buyer.home') }}" class="btn btn--base">@lang('Company Dashboard')</a>
+                    @endauth
                 </div>
-            </div>
+            @endif
         </div>
         <div class="footer-wrapper py-60">
             <div class="footer-item">
@@ -45,14 +55,13 @@
                 <h5 class="footer-item__title"> @lang('Important Link') </h5>
                 <ul class="footer-menu">
                     @if (auth()->guard('web')->check())
-                        <li class="footer-menu__item"><a href="{{ route('student.dashboard') }}" class="footer-menu__link"> @lang('Dashboard') </a></li>
+                        <li class="footer-menu__item"><a href="{{ route('user.home') }}" class="footer-menu__link"> @lang('Student Dashboard') </a></li>
                     @elseif (auth()->guard('buyer')->check())
-                        <li class="footer-menu__item"><a href="{{ route('firm.dashboard') }}" class="footer-menu__link"> @lang('Dashboard') </a></li>
+                        <li class="footer-menu__item"><a href="{{ route('buyer.home') }}" class="footer-menu__link"> @lang('Company Dashboard') </a></li>
                     @else
                         <li class="footer-menu__item"><a href="{{ route('user.login') }}" class="footer-menu__link"> @lang('Login Now') </a></li>
                     @endif
-                    <li class="footer-menu__item"><a href="{{ auth('buyer')->check() ? route('firm.post_job') : route('buyer.login') }}" class="footer-menu__link"> @lang('Post job') </a></li>
-                    <li class="footer-menu__item"><a href="{{ route('jobs.portal.index') }}" class="footer-menu__link"> @lang('Jobs') </a></li>
+                    <li class="footer-menu__item"><a href="{{ auth('buyer')->check() ? route('buyer.firm.post_job') : route('buyer.login') }}" class="footer-menu__link"> @lang('Post job') </a></li>
                     <li class="footer-menu__item"><a href="{{ route('all.freelancers') }}" class="footer-menu__link">@lang('Find students') </a>
                     </li>
                 </ul>
@@ -119,7 +128,7 @@
                         <a href="{{ route('home') }}">{{ __(gs('site_name')) }}</a> @lang('All rights reserved') .
                     </div>
                     <div class="bottom-footer-text mt-2">
-                        <small class="text-muted">Designed & Developed by Nexa Technologies LLP</small>
+                        <small class="text-muted">@lang('Article Connect tagline')</small>
                     </div>
                 </div>
             </div>

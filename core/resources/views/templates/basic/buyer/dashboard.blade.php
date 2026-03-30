@@ -146,7 +146,7 @@
                     </div>
                 @else
                     <div class="col-md-4 col-sm-6 col-xsm-6">
-                        <a href="{{ route('firm.post_job') }}" class="dashboard-widget">
+                        <a href="{{ route('buyer.firm.post_job') }}" class="dashboard-widget">
                             <div class="dashboard-widget__icon flex-center"><i class="las la-plus-circle"></i></div>
                             <div class="dashboard-widget__content">
                                 <span class="dashboard-widget__text">@lang('Post job')</span>
@@ -155,7 +155,7 @@
                         </a>
                     </div>
                     <div class="col-md-4 col-sm-6 col-xsm-6">
-                        <a href="{{ route('firm.posted_jobs.index') }}" class="dashboard-widget">
+                        <a href="{{ route('buyer.firm.posted_jobs.index') }}" class="dashboard-widget">
                             <div class="dashboard-widget__icon flex-center"><i class="las la-briefcase"></i></div>
                             <div class="dashboard-widget__content">
                                 <span class="dashboard-widget__text">@lang('My jobs')</span>
@@ -164,7 +164,7 @@
                         </a>
                     </div>
                     <div class="col-md-4 col-sm-6 col-xsm-6">
-                        <a href="{{ route('firm.posted_jobs.index') }}" class="dashboard-widget">
+                        <a href="{{ route('buyer.firm.posted_jobs.index') }}" class="dashboard-widget">
                             <div class="dashboard-widget__icon flex-center"><i class="las la-users"></i></div>
                             <div class="dashboard-widget__content">
                                 <span class="dashboard-widget__text">@lang('Applicants')</span>
@@ -173,7 +173,7 @@
                         </a>
                     </div>
                     <div class="col-md-4 col-sm-6 col-xsm-6">
-                        <a href="{{ route('firm.posted_jobs.index') }}" class="dashboard-widget">
+                        <a href="{{ route('buyer.firm.posted_jobs.index') }}" class="dashboard-widget">
                             <div class="dashboard-widget__icon flex-center"><i class="las la-door-open"></i></div>
                             <div class="dashboard-widget__content">
                                 <span class="dashboard-widget__text">@lang('Open listings')</span>
@@ -182,7 +182,7 @@
                         </a>
                     </div>
                     <div class="col-md-4 col-sm-6 col-xsm-6">
-                        <a href="{{ route('firm.posted_jobs.index') }}" class="dashboard-widget">
+                        <a href="{{ route('buyer.firm.posted_jobs.index') }}" class="dashboard-widget">
                             <div class="dashboard-widget__icon flex-center"><i class="las la-hourglass-half"></i></div>
                             <div class="dashboard-widget__content">
                                 <span class="dashboard-widget__text">@lang('In review')</span>
@@ -191,7 +191,7 @@
                         </a>
                     </div>
                     <div class="col-md-4 col-sm-6 col-xsm-6">
-                        <a href="{{ route('firm.posted_jobs.index') }}" class="dashboard-widget">
+                        <a href="{{ route('buyer.firm.posted_jobs.index') }}" class="dashboard-widget">
                             <div class="dashboard-widget__icon flex-center"><i class="las la-check-circle"></i></div>
                             <div class="dashboard-widget__content">
                                 <span class="dashboard-widget__text">@lang('Filled roles')</span>
@@ -250,7 +250,7 @@
                 @forelse ($postedJobs as $pj)
                     <div class="delivery-info mb-3">
                         <div class="delivery-info__top">
-                            <a href="{{ route('firm.posted_jobs.show', $pj) }}"
+                            <a href="{{ route('buyer.firm.posted_jobs.show', $pj) }}"
                                 class="title">{{ strLimit($pj->title, 50) }}</a>
                             <span class="badge bg--secondary">{{ __($pj->status) }} · {{ $pj->applications_count }}
                                 @lang('applicants')</span>
@@ -261,7 +261,7 @@
                         'message' => __('Post your first articleship or internship role to receive applications.'),
                     ])
                 @endforelse
-                <a href="{{ route('firm.post_job') }}" class="btn btn--base btn--sm mt-2">@lang('Post job')</a>
+                <a href="{{ route('buyer.firm.post_job') }}" class="btn btn--base btn--sm mt-2">@lang('Post job')</a>
             </div>
         @endif
 

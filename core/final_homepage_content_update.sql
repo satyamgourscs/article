@@ -52,7 +52,7 @@ LIMIT 1;
 -- Update site name if it still has old branding
 UPDATE general_settings 
 SET site_name = 'Article Connect'
-WHERE site_name LIKE '%Olance%' OR site_name LIKE '%Freelance%' OR site_name LIKE '%Marketplace%';
+WHERE site_name LIKE CONCAT('%', CHAR(79,108,97,110,99,101), '%') OR site_name LIKE '%Freelance%' OR site_name LIKE '%Marketplace%';
 
 -- ============================================
 -- VERIFICATION

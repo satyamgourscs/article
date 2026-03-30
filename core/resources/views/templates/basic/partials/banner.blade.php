@@ -13,26 +13,28 @@
                 <div class="col-lg-6">
                     <div class="banner-content highlight">
                         <h1 class="banner-content__title s-highlight" data-s-break="-1" data-s-length="1">
-                            {{ @$banner->heading ?? 'Find the Right Articleship & Internship Opportunities' }}</h1>
-                        <p class="banner-content__desc">{{ @$banner->subheading ?? 'Article Connect helps students discover articleship, internship, and training opportunities with trusted firms and companies.' }}</p>
-                        <div class="d-flex flex-wrap gap-2 mt-3 mb-2">
-                            <a href="{{ route('signup.student') }}" class="btn btn--base btn--sm">@lang('Student signup')</a>
-                            <a href="{{ route('signup.company') }}" class="btn btn-outline--base btn--sm">@lang('Company signup')</a>
-                        </div>
+                            {{ @$banner->heading ?? __('Find the Best Articleship Opportunities') }}</h1>
+                        <p class="banner-content__desc">{{ @$banner->subheading ?? __('Connecting CA Students with CA Firms') }}</p>
+                        @if (! auth()->guard('web')->check() && ! auth()->guard('buyer')->check())
+                            <div class="d-flex flex-wrap gap-2 mt-3 mb-2">
+                                <a href="{{ route('signup.student') }}" class="btn btn--base btn--sm">@lang('CA Student signup')</a>
+                                <a href="{{ route('signup.company') }}" class="btn btn-outline--base btn--sm">@lang('CA Firm signup')</a>
+                            </div>
+                        @endif
+                        @auth('web')
+                            <div class="d-flex flex-wrap gap-2 mt-3 mb-2">
+                                <a href="{{ route('user.home') }}" class="btn btn--base btn--sm">@lang('Student Dashboard')</a>
+                            </div>
+                        @endauth
+                        @auth('buyer')
+                            <div class="d-flex flex-wrap gap-2 mt-3 mb-2">
+                                <a href="{{ route('buyer.home') }}" class="btn btn--base btn--sm">@lang('Company Dashboard')</a>
+                            </div>
+                        @endauth
                     </div>
-                    <form class="banner-search-form" action="{{ route('jobs.portal.index') }}" method="GET">
-                        <div class="search-box">
-                            <input type="text" name="search"
-                                placeholder="@lang('Search jobs, firms, or skills')" autocomplete="off"
-                                aria-label="@lang('Search jobs, firms, or skills')">
-                            <button type="submit" aria-label="@lang('Search')">
-                                <i class="las la-search" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </form>
 
                     <div class="buyer-wrapper">
-                        <span class="buyer-wrapper__title">{{ @$banner->subtitle ?? 'Connect with trusted CA firms, companies, and training opportunities designed for students and career starters.' }}</span>
+                        <span class="buyer-wrapper__title">{{ @$banner->subtitle ?? __('Article Connect tagline') }}</span>
                         <div class="brand-slider">
                             @foreach ($clientElement as $client)
                                 <img src= "{{ frontendImage('client', @$client->data_values->image, '290x100') }}"

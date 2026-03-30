@@ -14,7 +14,7 @@
             <a class="navbar-brand logo" href="{{ route('home') }}"><img src="{{ siteLogo() }}" alt=""></a>
             <div class="d-xl-none d-block job-link">
                 @if ($isFirm)
-                    <a href="{{ route('firm.post_job') }}" class="btn btn--base btn--sm">
+                    <a href="{{ route('buyer.firm.post_job') }}" class="btn btn--base btn--sm">
                         @lang('Post job')
                     </a>
                 @endif
@@ -57,10 +57,6 @@
                     @endif
 
                     @if ($isStudent)
-                        <li
-                            class="nav-item {{ menuActive(['jobs.portal.index', 'jobs.portal.show', 'portal.my_applications']) }}">
-                            <a class="nav-link" href="{{ route('jobs.portal.index') }}">@lang('Jobs')</a>
-                        </li>
                         <li class="nav-item {{ menuActive(['all.freelancers', 'talent.explore']) }}">
                             <a class="nav-link" href="{{ route('all.freelancers') }}">@lang('Students')</a>
                         </li>
@@ -71,14 +67,7 @@
                         <li class="nav-item {{ menuActive(['all.freelancers', 'talent.explore']) }}">
                             <a class="nav-link" href="{{ route('all.freelancers') }}">@lang('Find students')</a>
                         </li>
-                        <li class="nav-item {{ menuActive(['firm.post_job*', 'firm.posted_jobs.*']) }}">
-                            <a class="nav-link" href="{{ route('firm.posted_jobs.index') }}">@lang('My jobs')</a>
-                        </li>
                     @else
-                        <li
-                            class="nav-item {{ menuActive(['jobs.portal.index', 'jobs.portal.show']) }}">
-                            <a class="nav-link" href="{{ route('jobs.portal.index') }}">@lang('Jobs')</a>
-                        </li>
                         <li class="nav-item {{ menuActive(['all.freelancers', 'talent.explore']) }}">
                             <a class="nav-link" href="{{ route('all.freelancers') }}">@lang('Students')</a>
                         </li>
@@ -93,29 +82,29 @@
                     <li class="nav-item d-flex justify-content-between w-100 d-xl-none">
                         <div class="top-button w-100">
                             <ul class="login-registration-list d-flex flex-wrap gap-2 align-items-center">
-                                @if ($isStudent)
+                                @auth('web')
                                     <li class="login-registration-list__item">
-                                        <a href="{{ route('student.dashboard') }}" class="login-registration-list__link">@lang('Dashboard')</a>
+                                        <a href="{{ route('user.home') }}" class="login-registration-list__link">@lang('Student Dashboard')</a>
                                     </li>
-                                @elseif ($isFirm)
+                                @elseauth('buyer')
                                     <li class="login-registration-list__item">
-                                        <a href="{{ route('firm.dashboard') }}" class="login-registration-list__link">@lang('Dashboard')</a>
+                                        <a href="{{ route('buyer.home') }}" class="login-registration-list__link">@lang('Company Dashboard')</a>
                                     </li>
                                 @else
                                     <li class="login-registration-list__item">
                                         <a href="{{ route('signup.student') }}"
-                                            class="login-registration-list__link">@lang('Student signup')</a>
+                                            class="login-registration-list__link">@lang('CA Student signup')</a>
                                     </li>
                                     <li class="login-registration-list__item">
                                         <a href="{{ route('signup.company') }}"
-                                            class="login-registration-list__link">@lang('Company signup')</a>
+                                            class="login-registration-list__link">@lang('CA Firm signup')</a>
                                     </li>
                                     <li class="login-registration-list__item">
                                         <button type="button"
                                             class="login-registration-list__link btn btn-link p-0 border-0"
                                             data-bs-toggle="modal" data-bs-target="#otpAuthModal">@lang('Login')</button>
                                     </li>
-                                @endif
+                                @endauth
                             </ul>
                         </div>
 
@@ -126,23 +115,23 @@
                 <div class="top-button d-flex flex-wrap justify-content-between align-items-center">
 
                     <ul class="login-registration-list d-flex flex-wrap justify-content-between align-items-center">
-                        @if ($isStudent)
+                        @auth('web')
                             <li class="login-registration-list__item">
-                                <a href="{{ route('student.dashboard') }}" class="login-registration-list__link">@lang('Dashboard')</a>
+                                <a href="{{ route('user.home') }}" class="btn btn--base btn--sm">@lang('Student Dashboard')</a>
                             </li>
-                        @elseif ($isFirm)
+                        @elseauth('buyer')
                             <li class="login-registration-list__item">
-                                <a href="{{ route('firm.dashboard') }}" class="login-registration-list__link">@lang('Dashboard')</a>
+                                <a href="{{ route('buyer.home') }}" class="btn btn--base btn--sm">@lang('Company Dashboard')</a>
                             </li>
                         @else
                             <li class="login-registration-list__item">
                                 <a href="{{ route('signup.student') }}" class="btn btn--base btn--sm">
-                                    @lang('Student signup')
+                                    @lang('CA Student signup')
                                 </a>
                             </li>
                             <li class="login-registration-list__item ms-1">
                                 <a href="{{ route('signup.company') }}" class="btn btn-outline--base btn--sm">
-                                    @lang('Company signup')
+                                    @lang('CA Firm signup')
                                 </a>
                             </li>
                             <li class="login-registration-list__item ms-1">
@@ -151,11 +140,11 @@
                                     @lang('Login')
                                 </button>
                             </li>
-                        @endif
+                        @endauth
 
                         @if ($isFirm)
                             <li class="login-registration-list__item ms-2">
-                                <a href="{{ route('firm.post_job') }}" class="btn btn--base btn--sm">@lang('Post job')</a>
+                                <a href="{{ route('buyer.firm.post_job') }}" class="btn btn--base btn--sm">@lang('Post job')</a>
                             </li>
                         @endif
                     </ul>

@@ -59,9 +59,9 @@ return new class extends Migration
                 ],
                 64 => [
                     'has_image' => '1',
-                    'heading' => 'CA Articleship & Internships — Start Here',
-                    'subheading' => 'Connect with CA firms, audit teams, and finance companies for real on-the-job training.',
-                    'subtitle' => 'Trusted by growing audit & finance teams',
+                    'heading' => 'Find the Best Articleship Opportunities',
+                    'subheading' => 'Connecting CA Students with CA Firms',
+                    'subtitle' => 'Article Connect – CA Articleship Platform',
                     'feature_one' => 'Structured training',
                     'feature_two' => 'Articleship & internship roles',
                     'feature_three' => 'GST · Audit · Accounts',
@@ -73,72 +73,72 @@ return new class extends Migration
                     'answer' => 'Articleship with CA firms, audit internships, tax & GST traineeships, corporate finance internships, and accounting assistant roles — focused on commerce and CA students.',
                 ],
                 73 => [
-                    'heading' => 'How hiring works',
-                    'subheading' => 'Companies publish roles; students apply with profiles that highlight articleship readiness, software skills, and coursework.',
+                    'heading' => 'How Article Connect works',
+                    'subheading' => 'CA Firms post articleship openings; CA Students apply with profiles that show audit, tax, and accounts readiness.',
                 ],
                 74 => [
                     'icon' => '<i class="fas fa-briefcase"></i>',
-                    'title' => 'Post a role',
+                    'title' => 'Post Articleship Opportunity',
                     'content' => 'Share title, duration, stipend (if any), location, and skills — e.g. audit, GST, Tally, Excel.',
                 ],
                 75 => [
                     'icon' => '<i class="fas fa-user-graduate"></i>',
-                    'title' => 'Review applications',
-                    'content' => 'Shortlist CA final-year, IPCC, or B.Com students whose skills match your engagement.',
+                    'title' => 'Hire CA Students',
+                    'content' => 'Review applications from CA Final, IPCC, or B.Com students whose skills match your firm.',
                 ],
                 76 => [
                     'icon' => '<i class="fas fa-check-square"></i>',
-                    'title' => 'Onboard trainees',
-                    'content' => 'Coordinate interviews and start dates through clear communication on the platform.',
+                    'title' => 'Start Working',
+                    'content' => 'Coordinate interviews and training start dates through clear communication on the platform.',
                 ],
                 77 => [
                     'icon' => '<i class="fas fa-hand-holding-usd"></i>',
-                    'title' => 'Stipend & compliance',
+                    'title' => 'Trusted firm connections',
                     'content' => 'Align stipend and documentation with your firm\'s ICAI and HR policies.',
                 ],
                 78 => [
                     'has_image' => '1',
-                    'freelancer_title' => 'Sign up as a student',
+                    'freelancer_title' => 'Sign Up as a CA Student',
                     'freelancer_content' => 'CA, IPCC, or B.Com profile with skills such as GST, Tally, audit basics, and Excel.',
-                    'freelancer_button_name' => 'Create student account',
-                    'buyer_title' => 'Sign up as a firm',
+                    'freelancer_button_name' => 'CA Student signup',
+                    'buyer_title' => 'Sign Up as a CA Firm',
                     'buyer_content' => 'Post articleship and internship openings for your CA firm, audit practice, or finance team.',
-                    'buyer_button_name' => 'Create firm account',
+                    'buyer_button_name' => 'CA Firm signup',
                     'freelancer' => '67d929f13124f1742285297.png',
                     'buyer' => '67d929f13efd31742285297.png',
                 ],
                 79 => [
                     'heading' => 'Why Article Connect',
-                    'subheading' => 'Purpose-built for Indian articleship and finance internships — not generic gig work.',
+                    'subheading' => 'Purpose-built for Indian articleship and finance internships.',
                 ],
                 80 => [
                     'has_image' => '1',
-                    'title' => 'Quality listings',
-                    'content' => 'Roles are oriented to training: articleship, audit, tax, and accounts — reviewed for seriousness.',
+                    'title' => 'Verified CA Firms & Opportunities',
+                    'content' => 'Roles focus on articleship, audit, tax, and accounts — reviewed for seriousness and training value.',
                     'image' => '67d92d4630f5f1742286150.png',
                 ],
                 81 => [
                     'has_image' => '1',
-                    'title' => 'No bidding wars',
-                    'content' => 'Students apply with cover notes and profiles; firms choose the right fit for each desk.',
+                    'title' => 'Structured applications',
+                    'content' => 'CA Students apply with clear notes and profiles; CA Firms choose the right fit for each desk.',
                     'image' => '67d92d3aea8ba1742286138.png',
                 ],
                 82 => [
                     'has_image' => '1',
-                    'title' => 'Secure & professional',
+                    'title' => 'Trusted Firm Connections',
                     'content' => 'Identity checks and firm verification options help keep the network trustworthy.',
                     'image' => '67d92d322b52c1742286130.png',
                 ],
                 83 => [
                     'has_image' => '1',
-                    'title' => 'Post trainings easily',
+                    'title' => 'Post articleship roles easily',
                     'content' => 'List duration, location, partner-in-charge expectations, and software (TallyPrime, SAP, etc.).',
                     'image' => '67d92d2981d5d1742286121.png',
                 ],
                 84 => [
                     'has_image' => '1',
-                    'title' => 'Apply — don\'t bid',
-                    'content' => 'One clear application flow per role; no auction-style pricing for trainee positions.',
+                    'title' => 'Apply with one clear flow',
+                    'content' => 'One application flow per listing; stipends and terms are set by the CA Firm in the description.',
                     'image' => '67d92d210a8a91742286113.png',
                 ],
                 85 => [
@@ -162,20 +162,20 @@ return new class extends Migration
                 90 => [
                     'has_image' => '1',
                     'heading' => 'What makes us different',
-                    'subheading' => 'Focused on statutory audit, tax, and accounts training — not generic remote gigs.',
+                    'subheading' => 'Focused on statutory audit, tax, and accounts training for CA articleship.',
                     'image' => '67d9265b17fcb1742284379.png',
                 ],
                 91 => [
-                    'title' => 'Relevant opportunities',
-                    'content' => 'Listings emphasize training outcomes: exposure to audit files, ITR, GST, and client coordination.',
+                    'title' => 'Verified CA Firms & opportunities',
+                    'content' => 'Listings emphasize training outcomes: audit files, ITR, GST, and client coordination.',
                 ],
                 92 => [
-                    'title' => 'Search by practice area',
-                    'content' => 'Filter by CA Articleship, Audit, GST, Accounting, or Corporate Finance.',
+                    'title' => 'Trusted Firm Connections',
+                    'content' => 'Work with verified CA Firms, audit practices, and finance teams that hire through Article Connect.',
                 ],
                 93 => [
-                    'title' => 'Save time',
-                    'content' => 'Students target fewer but better-matched roles; firms receive structured applications.',
+                    'title' => 'Unlimited Articleship Access',
+                    'content' => 'Search and filter by practice area, city, and stipend to find roles that fit your CA journey.',
                 ],
                 94 => [
                     'has_image' => '1',
@@ -226,13 +226,13 @@ return new class extends Migration
                     'image' => '67d9334a3c9131742287690.png',
                 ],
                 104 => [
-                    'heading' => 'Featured students',
+                    'heading' => 'Featured CA Students',
                     'subheading' => 'CA, IPCC, and commerce students ready for desk work in audit, tax, and accounts.',
                 ],
                 105 => [
                     'icon' => '<i class="far fa-star"></i>',
                     'digit' => '120',
-                    'content' => 'Students listing GST, Tally, audit support, and statutory compliance skills',
+                    'content' => 'CA Students listing GST, Tally, audit support, and statutory compliance skills',
                 ],
                 106 => [
                     'icon' => '<i class="fa-solid fa-sack-dollar"></i>',
@@ -242,7 +242,7 @@ return new class extends Migration
                 107 => [
                     'icon' => '<i class="fas fa-hourglass-half"></i>',
                     'digit' => '5',
-                    'content' => 'Days typical for firms to shortlist applications for internship batches',
+                    'content' => 'Days typical for CA Firms to shortlist applications for internship batches',
                 ],
                 108 => [
                     'has_image' => '1',
@@ -266,8 +266,8 @@ return new class extends Migration
                     'answer' => 'Complete your profile with exam level, software skills (Tally, Excel), city preference, and any prior internship.',
                 ],
                 115 => [
-                    'question' => 'Is there bidding on stipend?',
-                    'answer' => 'No. Students submit one application per listing; stipend and terms are set by the firm in the job description.',
+                    'question' => 'Is there auction-style competition on stipend?',
+                    'answer' => 'No. CA Students submit one application per listing; stipend and terms are set by the CA Firm in the opportunity description.',
                 ],
                 116 => [
                     'question' => 'What should my application note include?',
@@ -295,10 +295,10 @@ return new class extends Migration
                     'heading' => 'Trusted by audit & finance teams',
                 ],
                 144 => [
-                    'freelancer_login_button' => 'Login as student',
-                    'buyer_login_button' => 'Login as firm',
-                    'freelancer_register_button' => 'Join as student',
-                    'buyer_register_button' => 'Join as firm',
+                    'freelancer_login_button' => 'Log in as CA Student',
+                    'buyer_login_button' => 'Log in as CA Firm',
+                    'freelancer_register_button' => 'Join as CA Student',
+                    'buyer_register_button' => 'Join as CA Firm',
                 ],
             ];
 
@@ -427,13 +427,13 @@ return new class extends Migration
 
         if (Schema::hasTable('notification_templates')) {
             DB::table('notification_templates')->where('act', 'FREELANCER_INVITATION')->update([
-                'name' => 'Student invitation',
+                'name' => 'CA Student invitation',
                 'subject' => '{{site_name}} — Invitation to apply',
-                'push_title' => '{{site_name}} — Firm invitation',
-                'email_body' => '<p><b>{{buyer}}</b> invited you to explore <b>{{active_post}}</b> open role(s).</p><p>Browse their listings: <a href="{{post_page}}">{{post_page}}</a></p>',
-                'sms_body' => '{{buyer}} invited you. Open: {{post_page}}',
-                'push_body' => 'Invitation from {{buyer}}',
-                'shortcodes' => '{"buyer":"Firm name","active_post":"Open posts count","post_page":"Firm jobs URL"}',
+                'push_title' => '{{site_name}} — CA Firm invitation',
+                'email_body' => '<p><b>{{buyer}}</b> (CA Firm) invited you to explore <b>{{active_post}}</b> open listing(s).</p><p>Browse their opportunities: <a href="{{post_page}}">{{post_page}}</a></p>',
+                'sms_body' => 'CA Firm ({{buyer}}) invited you. Open: {{post_page}}',
+                'push_body' => 'Invitation from CA Firm {{buyer}}',
+                'shortcodes' => '{"buyer":"CA Firm name","active_post":"Open listings count","post_page":"Firm opportunities URL"}',
                 'updated_at' => $now,
             ]);
 
@@ -441,8 +441,8 @@ return new class extends Migration
                 'name' => 'Application submitted',
                 'subject' => '{{site_name}} — New application',
                 'push_title' => '{{site_name}} — Application received',
-                'email_body' => '<div>A student submitted an application for <b>{{title}}</b>.</div><div><br></div><div>Applicant: {{freelancer}}</div><div>Expected stipend / note: {{amount}}</div><div>Budget type: {{budget_type}}</div><div>Availability: {{estimate}}</div><div><br></div><div>Review the application in your dashboard.</div>',
-                'sms_body' => '{{freelancer}} applied to {{title}}.',
+                'email_body' => '<div>A CA Student submitted an application for <b>{{title}}</b>.</div><div><br></div><div>Applicant: {{freelancer}}</div><div>Expected stipend / note: {{amount}}</div><div>Budget type: {{budget_type}}</div><div>Availability: {{estimate}}</div><div><br></div><div>Review the application in your dashboard.</div>',
+                'sms_body' => 'A CA Student applied to {{title}}.',
                 'push_body' => 'New application on {{title}}',
                 'updated_at' => $now,
             ]);
@@ -450,8 +450,8 @@ return new class extends Migration
             DB::table('notification_templates')->where('act', 'BID_WITHRAWN')->update([
                 'name' => 'Application withdrawn',
                 'subject' => '{{site_name}} — Application withdrawn',
-                'email_body' => '<p>The student <strong>{{freelancer}}</strong> withdrew their application for <strong>{{job}}</strong>.</p>',
-                'sms_body' => '{{freelancer}} withdrew from {{job}}.',
+                'email_body' => '<p>The CA Student <strong>{{freelancer}}</strong> withdrew their application for <strong>{{job}}</strong>.</p>',
+                'sms_body' => 'A CA Student withdrew from {{job}}.',
                 'push_body' => 'Application withdrawn',
                 'updated_at' => $now,
             ]);

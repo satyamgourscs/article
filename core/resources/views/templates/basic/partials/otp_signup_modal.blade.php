@@ -13,12 +13,14 @@
             </div>
             <div class="modal-body pt-0">
                 <div id="otpStepLoginChoose" class="otp-step">
-                    <p class="text-muted small mb-3">@lang('Login as')</p>
+                    <p class="text-muted small mb-3">@lang('CA Student / Firm login')</p>
                     <button type="button" class="btn btn--base w-100 mb-2" data-guard="web">@lang('Student')</button>
                     <button type="button" class="btn btn-outline--base w-100 mb-2" data-guard="buyer">@lang('Firm')</button>
-                    <p class="text-muted small mb-0 mt-3">@lang('New here?')</p>
-                    <a href="{{ route('signup.student') }}" class="btn btn-link w-100 p-0 text-start">@lang('Student signup')</a>
-                    <a href="{{ route('signup.company') }}" class="btn btn-link w-100 p-0 text-start">@lang('Company signup')</a>
+                    @if (! auth()->guard('web')->check() && ! auth()->guard('buyer')->check())
+                        <p class="text-muted small mb-0 mt-3">@lang('New here?')</p>
+                        <a href="{{ route('signup.student') }}" class="btn btn-link w-100 p-0 text-start">@lang('CA Student signup')</a>
+                        <a href="{{ route('signup.company') }}" class="btn btn-link w-100 p-0 text-start">@lang('CA Firm signup')</a>
+                    @endif
                 </div>
                 <div id="otpStepContact" class="otp-step d-none">
                     @if (config('otp.test_mode'))

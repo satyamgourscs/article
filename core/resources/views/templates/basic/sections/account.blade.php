@@ -21,12 +21,12 @@
     // Fallback values if database query fails
     if (!$account || !is_object($account)) {
         $account = (object)[
-            'freelancer_title' => 'Sign Up as a Student',
-            'freelancer_content' => 'Build your profile, apply for articleship and internship opportunities, and start your professional journey.',
-            'freelancer_button_name' => 'Create Student Account',
-            'buyer_title' => 'Sign Up as a Firm',
-            'buyer_content' => 'Post articleship and internship opportunities, connect with talented students, and build your team.',
-            'buyer_button_name' => 'Create Firm Account',
+            'freelancer_title' => __('Sign Up as a CA Student'),
+            'freelancer_content' => __('Start your CA journey, connect with firms, and gain real articleship experience.'),
+            'freelancer_button_name' => __('CA Student signup'),
+            'buyer_title' => __('Sign Up as a CA Firm'),
+            'buyer_content' => __('Post articleship opportunities, hire CA students, and grow your firm.'),
+            'buyer_button_name' => __('CA Firm signup'),
             'freelancer' => null,
             'buyer' => null
         ];
@@ -35,35 +35,59 @@
 
 <div class="account-section my-120">
     <div class="container">
-        <div class="row gy-4">
-            <div class="col-xl-6">
-                <div class="account-item">
-                    <div class="account-item__content highlight">
-                        <h3 class="account-item__title s-highlight" data-s-break="-1" data-s-length="1">{{ @$account->freelancer_title ?? 'Sign Up as a Student' }}</h3>
-                        <p class="account-item__text">{{ @$account->freelancer_content ?? 'Build your profile, apply for articleship and internship opportunities, and start your professional journey.' }}</p>
-                        <div class="account-item__btn">
-                            <a href="{{ route('signup.student') }}" class="btn btn--base">{{ @$account->freelancer_button_name ?? 'Create Student Account' }}</a>
+        @if (! auth()->guard('web')->check() && ! auth()->guard('buyer')->check())
+            <div class="row gy-4">
+                <div class="col-xl-6">
+                    <div class="account-item">
+                        <div class="account-item__content highlight">
+                            <h3 class="account-item__title s-highlight" data-s-break="-1" data-s-length="1">{{ @$account->freelancer_title ?? __('Sign Up as a CA Student') }}</h3>
+                            <p class="account-item__text">{{ @$account->freelancer_content ?? __('Start your CA journey, connect with firms, and gain real articleship experience.') }}</p>
+                            <div class="account-item__btn">
+                                <a href="{{ route('signup.student') }}" class="btn btn--base">{{ @$account->freelancer_button_name ?? __('CA Student signup') }}</a>
+                            </div>
+                        </div>
+                        <div class="account-item__thumb">
+                            <img src="{{ frontendImage('account', @$account->freelancer, '530x490') }}" alt="">
                         </div>
                     </div>
-                    <div class="account-item__thumb">
-                        <img src="{{ frontendImage('account', @$account->freelancer, '530x490') }}" alt="">
+                </div>
+                <div class="col-xl-6">
+                    <div class="account-item">
+                        <div class="account-item__content highlight">
+                            <h3 class="account-item__title s-highlight" data-s-break="-1" data-s-length="1">{{ @$account->buyer_title ?? __('Sign Up as a CA Firm') }}</h3>
+                            <p class="account-item__text">{{ @$account->buyer_content ?? __('Post articleship opportunities, hire CA students, and grow your firm.') }}</p>
+                            <div class="account-item__btn">
+                                <a href="{{ route('signup.company') }}" class="btn btn--base">{{ @$account->buyer_button_name ?? __('CA Firm signup') }}</a>
+                            </div>
+                        </div>
+                        <div class="account-item__thumb">
+                            <img src="{{ frontendImage('account', @$account->buyer, '750x530') }}" alt="">
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-6">
-                <div class="account-item">
-                    <div class="account-item__content highlight">
-                        <h3 class="account-item__title s-highlight" data-s-break="-1" data-s-length="1">{{ @$account->buyer_title ?? 'Sign Up as a Firm' }}</h3>
-                        <p class="account-item__text">{{ @$account->buyer_content ?? 'Post articleship and internship opportunities, connect with talented students, and build your team.' }}</p>
-                        <div class="account-item__btn">
-                            <a href="{{ route('signup.company') }}" class="btn btn--base">{{ @$account->buyer_button_name ?? 'Create Firm Account' }}</a>
+        @else
+            <div class="row gy-4 justify-content-center">
+                <div class="col-xl-8">
+                    <div class="account-item">
+                        <div class="account-item__content highlight text-center py-4">
+                            @auth('web')
+                                <h3 class="account-item__title">@lang('Student Dashboard')</h3>
+                            @elseauth('buyer')
+                                <h3 class="account-item__title">@lang('Company Dashboard')</h3>
+                            @endauth
+                            <p class="account-item__text">@lang('Article Connect tagline')</p>
+                            <div class="account-item__btn d-flex flex-wrap gap-2 justify-content-center">
+                                @auth('web')
+                                    <a href="{{ route('user.home') }}" class="btn btn--base">@lang('Student Dashboard')</a>
+                                @elseauth('buyer')
+                                    <a href="{{ route('buyer.home') }}" class="btn btn--base">@lang('Company Dashboard')</a>
+                                @endauth
+                            </div>
                         </div>
-                    </div>
-                    <div class="account-item__thumb">
-                        <img src="{{ frontendImage('account', @$account->buyer, '750x530') }}" alt="">
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
     </div>
 </div>

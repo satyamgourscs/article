@@ -8,7 +8,7 @@
                 style="6"
                 link="{{route('admin.users.all')}}"
                 icon="las la-users"
-                title="Total Students"
+                title="{{ __('Total Students') }}"
                 value="{{$widget['total_users']}}"
                 bg="primary"
             />
@@ -18,7 +18,7 @@
                 style="6"
                 link="{{route('admin.users.active')}}"
                 icon="las la-user-check"
-                title="Active Students"
+                title="{{ __('Active Students') }}"
                 value="{{$widget['verified_users']}}"
                 bg="success"
             />
@@ -28,7 +28,7 @@
                 style="6"
                 link="{{route('admin.users.email.unverified')}}"
                 icon="lar la-envelope"
-                title="Email Unverified Students"
+                title="{{ __('Email Unverified Students') }}"
                 value="{{$widget['email_unverified_users']}}"
                 bg="danger"
             />
@@ -38,7 +38,7 @@
                 style="6"
                 link="{{route('admin.users.mobile.unverified')}}"
                 icon="las la-comment-slash"
-                title="Mobile Unverified Students"
+                title="{{ __('Mobile Unverified Students') }}"
                 value="{{$widget['mobile_unverified_users']}}"
                 bg="warning"
             />
@@ -52,7 +52,7 @@
                 style="6"
                 link="{{route('admin.buyers.index')}}"
                 icon="las la-users-cog"
-                title="Total Firms"
+                title="{{ __('Total Firms') }}"
                 value="{{$widget['total_buyers']}}"
                 bg="primary"
             />
@@ -62,7 +62,7 @@
                 style="6"
                 link="{{route('admin.buyers.active')}}"
                 icon="las la-user-check"
-                title="Active Firms"
+                title="{{ __('Active Firms') }}"
                 value="{{$widget['verified_buyers']}}"
                 bg="success"
             />
@@ -72,7 +72,7 @@
                 style="6"
                 link="{{route('admin.buyers.email.unverified')}}"
                 icon="lar la-envelope"
-                title="Email Unverified Firms"
+                title="{{ __('Email Unverified Firms') }}"
                 value="{{$widget['email_unverified_buyers']}}"
                 bg="danger"
             />
@@ -82,7 +82,7 @@
                 style="6"
                 link="{{route('admin.buyers.mobile.unverified')}}"
                 icon="las la-comment-slash"
-                title="Mobile Unverified Firms"
+                title="{{ __('Mobile Unverified Firms') }}"
                 value="{{$widget['mobile_unverified_buyers']}}"
                 bg="warning"
             />
@@ -94,7 +94,7 @@
             <x-widget
                 style="6"
                 link="{{ route('admin.jobs.index') }}"
-                title="Total Jobs"
+                title="{{ __('Total Jobs') }}"
                 icon="las la-briefcase"
                 value="{{  $widget['total_jobs'] }}"
                 bg="success"
@@ -105,7 +105,7 @@
             <x-widget
                 style="6"
                 link="{{ route('admin.bids.index') }}"
-                title="Total Bids"
+                title="{{ __('Total Bids') }}"
                 icon="las la-gavel"
                  value="{{  $widget['total_bids'] }}"
                 bg="warning"
@@ -127,7 +127,7 @@
             <x-widget
                 style="6"
                 link="{{ route('admin.project.completed') }}"
-                title="Total Completed Projects"
+                title="{{ __('Total Completed Projects') }}"
                 icon="las la-check-circle"
                 value="{{  $widget['total_completed_projects'] }}"
                 bg="primary"

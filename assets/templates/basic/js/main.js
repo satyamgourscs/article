@@ -235,7 +235,7 @@
     $(".profile-action-btn__share").on("click", function () {
       $(".dropdown-menu").toggleClass("show");
     });
-    /*============== clients slider js start here ==============*/
+    /*============== brand / client logo marquee (.brand-slider) ==============*/
     $(".brand-slider").slick({
       slidesToShow: 3,
       slidesToScroll: 1,
@@ -273,7 +273,7 @@
         },
       ],
     });
-    /*============ clients slider js end here ==============*/
+    /*============ brand / client logo marquee end ==============*/
 
     // category sidebar js
     $(document).ready(function () {
@@ -299,7 +299,7 @@
     });
     // category sidebar js
 
-    /*============== freelancer slider js start here ==============*/
+    /*============== CA students carousel (best-professionals section) ==============*/
     $(".best-freelancer").slick({
       slidesToShow: 4,
       slidesToScroll: 1,
@@ -345,7 +345,7 @@
         },
       ],
     });
-    /*============ freelancer slider js end here ==============*/
+    /*============ CA students carousel end ==============*/
 
     // faq item add and less js
     $(document).ready(function () {

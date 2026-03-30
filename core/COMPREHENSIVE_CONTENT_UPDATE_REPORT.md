@@ -179,7 +179,7 @@ Successfully completed a comprehensive update of all visible content across the 
 ### CMS Content (frontends table)
 
 #### FAQ Elements
-- Updated FAQ questions mentioning "Olance" → "Article Connect"
+- Updated FAQ questions mentioning "ARTICLE CONNECT" → "Article Connect"
 - Updated FAQ answers mentioning "jobs" → "opportunities"
 - Updated FAQ about "bidding" → "applying"
 

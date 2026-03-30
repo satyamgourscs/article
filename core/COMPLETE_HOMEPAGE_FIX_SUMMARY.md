@@ -91,7 +91,7 @@
 - ✅ Buyer → Firm / CA Firm
 - ✅ Freelance Jobs → Articleship & Internship Opportunities
 - ✅ Top Rated Freelancers → Top Students
-- ✅ How's Olance is Different → How Article Connect is Different
+- ✅ How's ARTICLE CONNECT is Different → How Article Connect is Different
 - ✅ Sign Up as a Freelancer → Sign Up as a Student
 - ✅ Sign Up as a Buyer → Sign Up as a Firm
 - ✅ Create Freelance Account → Create Student Account
@@ -138,7 +138,7 @@ Visit http://localhost/article/ and you should see:
 ✅ **Facility Section:** "How Article Connect is Different"  
 ✅ **Top Students:** "Top Students" heading  
 ✅ **Footer:** Updated signup sections  
-✅ **No "Olance" references**  
+✅ **No "ARTICLE CONNECT" references**  
 ✅ **No "Freelancer" or "Buyer" in visible text**
 
 ## Summary

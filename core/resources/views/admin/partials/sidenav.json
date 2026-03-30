@@ -4,7 +4,7 @@
             "Dashboard",
             "Home",
             "Panel",
-            "Admin",
+            "Super Admin",
             "Control center",
             "Overview",
             "Main hub",
@@ -21,7 +21,7 @@
             "Command dashboard",
             "Main control panel"
         ],
-        "title": "Dashboard",
+        "title": "Super Admin",
         "icon": "las la-home",
         "route_name": "admin.dashboard",
         "menu_active": "admin.dashboard"
@@ -45,7 +45,7 @@
         "menu_active": ["admin.plans.index", "admin.plans.create", "admin.plans.edit"]
     },
     "manage_jobs": {
-        "title": "Manage Opportunities",
+        "title": "Manage opportunities",
         "icon": "las la-briefcase",
         "counters": ["jobPendingCount", "jobDraftedCount", "jobRejectedCount"],
         "menu_active": "admin.jobs*",
@@ -124,7 +124,7 @@
                     "Job configuration",
                     "Job management"
                 ],
-                "title": "All Opportunities",
+                "title": "All opportunities",
                 "route_name": "admin.jobs.index",
                 "menu_active": "admin.jobs.index"
             }
@@ -132,12 +132,12 @@
     },
 
     "job_portal": {
-        "title": "CA job portal",
+        "title": "Service portal",
         "icon": "las la-id-card-alt",
         "menu_active": "admin.posted.portal*",
         "submenu": [
             {
-                "title": "Posted jobs",
+                "title": "Posted requirements",
                 "route_name": "admin.posted.portal.index",
                 "menu_active": "admin.posted.portal.index"
             },
@@ -151,19 +151,20 @@
 
     "manage_bids": {
         "keyword": [
-            "Manage Bid",
-            "Proposal",
-            "Asking Job",
-            "Job Tasking Proposal"
+            "Manage applications",
+            "All applications",
+            "Opportunity applications",
+            "Student applications",
+            "Application list"
         ],
-        "title": "All Bids",
+        "title": "All applications",
         "icon": "las la-gavel",
         "route_name": "admin.bids.index",
         "menu_active": "admin.bids.index"
     },
 
     "manage_projects": {
-        "title": "Manage Projects",
+        "title": "Manage cases",
         "icon": "las la-clipboard-list",
         "counters": ["projectReportedCount"],
         "menu_active": "admin.project.*",
@@ -227,7 +228,7 @@
                     "Project Management",
                     "Job configuration"
                 ],
-                "title": "All Projects",
+                "title": "All cases",
                 "route_name": "admin.project.index",
                 "menu_active": "admin.project.index"
             }
@@ -235,7 +236,7 @@
     },
 
     "manage_users": {
-        "title": "Students",
+        "title": "CA Students",
         "icon": "las la-users",
         "counters": [
             "bannedUsersCount",
@@ -256,7 +257,7 @@
                     "User activity",
                     "User analytics"
                 ],
-                "title": "Active Students",
+                "title": "Active CA Students",
                 "route_name": "admin.users.active",
                 "menu_active": "admin.users.active"
             },
@@ -281,7 +282,7 @@
                     "Account bans",
                     "User activity"
                 ],
-                "title": "Banned Students",
+                "title": "Banned CA Students",
                 "route_name": "admin.users.banned",
                 "menu_active": "admin.users.banned",
                 "counter": "bannedUsersCount"
@@ -359,7 +360,7 @@
                     "User activity",
                     "User analytics"
                 ],
-                "title": "All Students",
+                "title": "All CA Students",
                 "route_name": "admin.users.all",
                 "menu_active": "admin.users.all"
             },
@@ -391,7 +392,7 @@
     },
 
     "manage_buyers": {
-        "title": "Companies",
+        "title": "CA Firms",
         "icon": "las la-users-cog",
         "counters": [
             "bannedBuyersCount",
@@ -412,7 +413,7 @@
                     "Company activity",
                     "Company analytics"
                 ],
-                "title": "Active Companies",
+                "title": "Active CA Firms",
                 "route_name": "admin.buyers.active",
                 "menu_active": "admin.buyers.active"
             },
@@ -424,7 +425,7 @@
                     "Account bans",
                     "Company activity"
                 ],
-                "title": "Banned Companies",
+                "title": "Banned CA Firms",
                 "route_name": "admin.buyers.banned",
                 "menu_active": "admin.buyers.banned",
                 "counter": "bannedBuyersCount"
@@ -502,7 +503,7 @@
                     "Company activity",
                     "Company analytics"
                 ],
-                "title": "All Companies",
+                "title": "All CA Firms",
                 "route_name": "admin.buyers.index",
                 "menu_active": "admin.buyers.index"
             },

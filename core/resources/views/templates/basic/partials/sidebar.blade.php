@@ -23,10 +23,10 @@
          </div>
         <!-- ========= Sidebar Menu Start ================ -->
         <ul class="sidebar-menu-list">
-            <li class="sidebar-menu-list__item {{ menuActive(['user.home', 'student.dashboard']) }}">
-                <a href="{{ route('student.dashboard') }}" class="sidebar-menu-list__link">
+            <li class="sidebar-menu-list__item {{ menuActive('user.home') }}">
+                <a href="{{ route('user.home') }}" class="sidebar-menu-list__link">
                     <span class="icon"> <i class="las la-home"></i> </span>
-                    <span class="text">@lang('Dashboard') </span>
+                    <span class="text">@lang('Student Dashboard') </span>
                 </a>
             </li>
             <li class="sidebar-menu-list__item {{ menuActive(['user.referral_wallet.index', 'user.referral_wallet.withdraw']) }}">
