@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\WalletWithdrawRequest;
+use App\Support\SafeSchema;
 use Illuminate\Http\Request;
 
 class StudentWalletController extends Controller
@@ -22,11 +23,24 @@ class StudentWalletController extends Controller
 
         $pageTitle = __('My Wallet');
         $user = auth()->user();
+        $user->refresh();
 
         $wallet = Wallet::firstOrCreate(
             ['user_id' => $user->id],
             ['balance' => 0, 'total_earned' => 0, 'total_withdrawn' => 0]
         );
+
+        $uBal = (float) $user->balance;
+        $wBal = (float) $wallet->balance;
+        if (abs($uBal - $wBal) > 1e-8) {
+            if ($wBal > $uBal) {
+                $user->balance = $wBal;
+                $user->save();
+            } else {
+                $wallet->balance = $uBal;
+                $wallet->save();
+            }
+        }
 
         $transactions = WalletTransaction::where('user_id', $user->id)
             ->orderByDesc('id')
@@ -36,7 +50,7 @@ class StudentWalletController extends Controller
             ->orderByDesc('id')
             ->paginate(10, ['*'], 'wpage');
 
-        return view('Template::user.wallet.referral', compact('pageTitle', 'wallet', 'transactions', 'withdrawals'));
+        return view('Template::user.wallet.referral', compact('pageTitle', 'user', 'wallet', 'transactions', 'withdrawals'));
     }
 
     public function withdrawRequest(Request $request)
@@ -53,16 +67,22 @@ class StudentWalletController extends Controller
         ]);
 
         $user = auth()->user();
+        $user->refresh();
+        if (SafeSchema::hasColumn('users', 'upi_id') && ! $user->hasWithdrawalPayoutDetails()) {
+            $notify[] = ['error', __('Add your UPI ID and/or bank account number with IFSC in Profile → Bank details before withdrawing.')];
+
+            return back()->withNotify($notify);
+        }
         $wallet = Wallet::where('user_id', $user->id)->first();
 
-        if (! $wallet || (float) $wallet->balance < self::MIN_WITHDRAW_BALANCE) {
+        if ((float) $user->balance < self::MIN_WITHDRAW_BALANCE) {
             $notify[] = ['error', __('Withdrawals require a balance of at least :min.', ['min' => self::MIN_WITHDRAW_BALANCE])];
 
             return back()->withNotify($notify);
         }
 
         $amount = (float) $request->amount;
-        if ($amount > (float) $wallet->balance) {
+        if ($amount > (float) $user->balance) {
             $notify[] = ['error', __('Amount exceeds your available balance.')];
 
             return back()->withNotify($notify);

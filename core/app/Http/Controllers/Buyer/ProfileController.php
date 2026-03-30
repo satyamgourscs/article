@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
+use App\Support\SafeSchema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -23,6 +24,13 @@ class ProfileController extends Controller
         $request->validate([
             'firstname' => 'required|string',
             'lastname' => 'required|string',
+            'address' => 'nullable|string|max:500',
+            'city' => 'nullable|string|max:191',
+            'state' => 'nullable|string|max:191',
+            'zip' => 'nullable|string|max:32',
+            'pincode' => 'nullable|string|max:32',
+            'skills' => 'nullable|array|max:50',
+            'skills.*' => 'nullable|string|max:100',
             'language'   => 'required|array|min:1|max:10',
             'language.*' => 'nullable|string',
             'image'       => ["$imageRule", new FileTypeValidate(['jpg', 'jpeg', 'png'])],
@@ -49,10 +57,45 @@ class ProfileController extends Controller
         $user->city = $request->city;
         $user->state = $request->state;
         $user->zip = $request->zip;
+        if (SafeSchema::hasColumn('buyers', 'pincode')) {
+            $user->pincode = $request->input('pincode', $request->zip);
+        }
+        $user->country_name = 'India';
+        $user->country_code = 'IN';
+        if (SafeSchema::hasColumn('buyers', 'country')) {
+            $user->country = 'India';
+        }
+        if (SafeSchema::hasColumn('buyers', 'preferred_state')) {
+            $user->preferred_state = $request->state;
+        }
+        if (SafeSchema::hasColumn('buyers', 'preferred_city')) {
+            $user->preferred_city = $request->city;
+        }
+        if (SafeSchema::hasColumn('buyers', 'skills') && $request->filled('skills')) {
+            $skillsList = array_values(array_filter(array_map(
+                static fn ($s) => is_string($s) ? trim($s) : '',
+                $request->input('skills', [])
+            )));
+            $user->skills = $skillsList;
+        }
 
         $user->language = $request->language;
 
         $user->save();
+
+        if (SafeSchema::hasTable('company_profiles') && $user->companyProfile) {
+            $payload = [
+                'state' => $request->state,
+                'city' => $request->city,
+            ];
+            if (SafeSchema::hasColumn('company_profiles', 'pincode')) {
+                $payload['pincode'] = $request->input('pincode', $request->zip);
+            }
+            if (SafeSchema::hasColumn('company_profiles', 'country')) {
+                $payload['country'] = 'India';
+            }
+            $user->companyProfile->update($payload);
+        }
         $notify[] = ['success', 'Profile updated successfully'];
         return back()->withNotify($notify);
     }

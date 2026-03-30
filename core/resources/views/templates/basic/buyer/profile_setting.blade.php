@@ -1,11 +1,17 @@
 @extends($activeTemplate . 'layouts.buyer_master')
 @section('content')
+    @php
+        $locStateVal = old('state', $user->state ?? '');
+        $locCityVal = old('city', $user->city ?? '');
+        $locZipVal = old('zip', $user->zip ?? '');
+    @endphp
     <div class="container-fluid px-0">
         <div class="row justify-content-center">
             <div class="col-xxl-12">
                 <div class="card custom--card">
                     <div class="card-body">
-                        <form class="disableSubmission" method="POST" enctype="multipart/form-data">
+                        <form class="disableSubmission" method="POST" action="{{ route('buyer.profile.setting') }}"
+                            enctype="multipart/form-data">
                             @csrf
                             <div class="row justify-content-center gy-4">
                                 <div class="col-xl-4 col-lg-12">
@@ -50,30 +56,15 @@
                                             <label class="form--label">@lang('Mobile Number')</label>
                                             <input class="form-control form--control" value="{{ $user->mobile }}" readonly>
                                         </div>
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-12">
                                             <label class="form--label">@lang('Address')</label>
                                             <input class="form-control form--control" name="address" type="text"
-                                                value="{{ @$user->address }}">
+                                                value="{{ old('address', $user->address) }}">
                                         </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="form--label">@lang('State')</label>
-                                            <input class="form-control form--control" name="state" type="text"
-                                                value="{{ @$user->state }}">
+                                        <div class="col-12">
+                                            <p class="text-muted small mb-2">@lang('India only. Search state and city, or enter a 6-digit pincode to auto-fill.')</p>
                                         </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="form--label">@lang('Zip Code')</label>
-                                            <input class="form-control form--control" name="zip" type="text"
-                                                value="{{ @$user->zip }}">
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="form--label">@lang('City')</label>
-                                            <input class="form-control form--control" name="city" type="text"
-                                                value="{{ @$user->city }}">
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="form--label">@lang('Country')</label>
-                                            <input class="form-control form--control" value="{{ @$user->country_name }}" disabled>
-                                        </div>
+                                        @include('Template::partials.india_location_form_fields', ['user' => $user])
                                         <div class="col-sm-12">
                                             <div class="form-group ">
                                                 <label class="form--label">@lang('Language') </label>
@@ -113,6 +104,7 @@
 
 @push('script-lib')
     <script src="{{ asset('assets/global/js/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/global/js/india-location-api-select2.js') }}"></script>
 @endpush
 @push('style-lib')
     <link href="{{ asset('assets/global/css/select2.min.css') }}" rel="stylesheet">
@@ -164,12 +156,35 @@
                     });
             });
 
+            initIndiaLocationApiSelect2({
+                stateSelect: '#state',
+                citySelect: '#city',
+                pincodeInput: '#pincode',
+                stateDropdownParent: $('#state').closest('.position-relative'),
+                cityDropdownParent: $('#city').closest('.position-relative'),
+                initialState: @json($locStateVal),
+                initialCity: @json($locCityVal),
+                initialPincode: @json($locZipVal),
+                placeholderState: @json(__('Search or select state')),
+                placeholderCity: @json(__('Search or select city'))
+            });
+
         })(jQuery);
     </script>
 @endpush
 
 @push('style')
     <style>
+        .select2-container {
+            width: 100% !important;
+        }
+        .select2-container--default .select2-selection--single {
+            min-height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;
+            border: 1px solid hsl(var(--black) / 0.1);
+            border-radius: 0.375rem;
+        }
+
         .btn {
             padding: 10px 24px;
         }

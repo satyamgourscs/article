@@ -88,6 +88,19 @@
                                     </div>
                                 </div>
                             </div>
+                            @if (\Illuminate\Support\Facades\Schema::hasColumn((new \App\Models\GeneralSetting)->getTable(), 'referral_signup_bonus'))
+                            <div class="col-xl-4 col-sm-6">
+                                <div class="form-group ">
+                                    <label>@lang('Student referral bonus')</label>
+                                    <p class="text-muted small">@lang('Amount credited to the referrer’s wallet when a new student signs up with their code (0 to disable).')</p>
+                                    <div class="input-group">
+                                        <input class="form-control" type="text" name="referral_signup_bonus" step="any"
+                                            value="{{ getAmount(gs('referral_signup_bonus') ?? config('referral.signup_bonus_amount', 50)) }}">
+                                        <span class="input-group-text">{{ gs('cur_text') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
                         </div>
 
                         <div class="form-group">

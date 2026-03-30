@@ -162,7 +162,12 @@ class AppServiceProvider extends ServiceProvider
                     $user = auth()->guard('web')->user();
                     $unreadCount = Message::whereHas('conversation', function ($query) use ($user) {
                         $query->where('user_id', $user->id);
-                    })->whereNull('read_at')->count();
+                    })
+                        ->whereNull('read_at')
+                        ->where(function ($query) use ($user) {
+                            $query->where('user_id', 0)->orWhere('user_id', '!=', $user->id);
+                        })
+                        ->count();
                 }
             } catch (\Throwable $e) {
                 \Log::debug('Student unread message count: '.$e->getMessage());
@@ -185,6 +190,7 @@ class AppServiceProvider extends ServiceProvider
                         $query->where('buyer_id', $buyer->id);
                     })
                         ->whereNull('buyer_read_at')
+                        ->where('user_id', '>', 0)
                         ->count();
                 }
             } catch (\Throwable $e) {

@@ -14,6 +14,7 @@ class StudentProfile extends Model
         'preferred_domains',
         'preferred_state',
         'preferred_city',
+        'skills',
         'training_experience',
         'resume_path',
         'expertise_level',
@@ -24,6 +25,7 @@ class StudentProfile extends Model
     {
         return [
             'preferred_domains' => 'array',
+            'skills' => 'array',
         ];
     }
 

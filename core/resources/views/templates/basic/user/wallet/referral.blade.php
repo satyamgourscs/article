@@ -7,7 +7,7 @@
                     <div class="card-body">
                         <h5 class="mb-3">@lang('Wallet overview')</h5>
                         <p class="mb-1 text-muted">@lang('Current balance')</p>
-                        <h3 class="mb-3">{{ showAmount($wallet->balance) }}</h3>
+                        <h3 class="mb-3">{{ showAmount(auth()->user()->balance) }}</h3>
                         <p class="mb-1 text-muted">@lang('Total earned')</p>
                         <h5 class="mb-0">{{ showAmount($wallet->total_earned) }}</h5>
                     </div>
@@ -20,6 +20,15 @@
                         <p class="text-muted small mb-3">
                             @lang('Minimum balance to withdraw: :amount. Minimum request: :amount.', ['amount' => showAmount(\App\Http\Controllers\User\StudentWalletController::MIN_WITHDRAW_BALANCE)])
                         </p>
+                        @php
+                            $payoutOk = ! \App\Support\SafeSchema::hasColumn('users', 'upi_id') || auth()->user()->hasWithdrawalPayoutDetails();
+                        @endphp
+                        @if (! $payoutOk)
+                            <div class="alert alert-warning small mb-3" role="alert">
+                                @lang('Add your UPI ID and/or bank account number with IFSC in Profile → Bank details before withdrawing.')
+                                <a href="{{ route('user.profile.bank') }}" class="alert-link">@lang('Open bank details')</a>
+                            </div>
+                        @endif
                         <form action="{{ route('user.referral_wallet.withdraw') }}" method="POST">
                             @csrf
                             <div class="form-group mb-3">

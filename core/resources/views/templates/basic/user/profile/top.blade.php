@@ -18,6 +18,9 @@
     <span class="badge rounded-pill px-3 py-2 {{ $stepBadge($activeRoute === 'user.profile.portfolio') }}" style="{{ $stepStyle($activeRoute === 'user.profile.portfolio') }}">
         3 @lang('Portfolio')
     </span>
+    <span class="badge rounded-pill px-3 py-2 {{ $stepBadge($activeRoute === 'user.profile.bank') }}" style="{{ $stepStyle($activeRoute === 'user.profile.bank') }}">
+        5 @lang('Bank')
+    </span>
 </div>
 
 <p class="text-muted small mb-2">@lang('Complete these steps to finish your student profile.')</p>
@@ -42,6 +45,12 @@
     <li class="nav-item {{ menuActive('user.profile.education') ? 'current' : '' }}">
         <a class="nav-link {{ menuActive('user.profile.education') }}" href="{{ route('user.profile.education') }}">
             <span class="profile-item__title text-muted">@lang('Education (optional)')</span>
+        </a>
+    </li>
+    <li class="nav-item {{ $activeRoute === 'user.profile.bank' ? 'current' : '' }}">
+        <a class="nav-link {{ menuActive('user.profile.bank') }} {{ $currentStep < 2 ? 'disabled pe-none text-muted' : '' }}"
+            href="{{ $currentStep >= 2 ? route('user.profile.bank') : 'javascript:void(0)' }}">
+            <span class="profile-item__title text-muted">@lang('Step 5: Bank details (optional)')</span>
         </a>
     </li>
 </ul>

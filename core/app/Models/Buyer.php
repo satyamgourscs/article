@@ -12,6 +12,17 @@ class Buyer extends Authenticatable
 {
     use HasApiTokens, BuyerNotify;
 
+    /** @var list<string> */
+    protected $fillable = [
+        'firstname', 'lastname', 'username', 'email', 'dial_code', 'mobile',
+        'country_name', 'country_code', 'country', 'city', 'state', 'zip', 'pincode',
+        'address', 'image', 'skills', 'preferred_state', 'preferred_city',
+        'bank_name', 'bank_account_number', 'bank_ifsc', 'bank_account_holder_name', 'upi_id',
+        'account_number', 'ifsc_code', 'account_holder_name',
+        'referral_code', 'referred_by', 'referred_by_user_id',
+        'profile_complete', 'ev', 'sv', 'kv', 'status', 'ts', 'tv', 'tsc', 'language',
+    ];
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -22,7 +33,12 @@ class Buyer extends Authenticatable
         'remember_token',
         'ver_code',
         'balance',
-        'kyc_data'
+        'kyc_data',
+        'bank_account_number',
+        'bank_ifsc',
+        'upi_id',
+        'account_number',
+        'ifsc_code',
     ];
 
     /**
@@ -35,6 +51,7 @@ class Buyer extends Authenticatable
         'kyc_data' => 'object',
         'ver_code_send_at' => 'datetime',
         'language'     => 'object',
+        'skills'       => 'array',
     ];
 
 

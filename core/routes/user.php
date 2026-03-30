@@ -82,6 +82,9 @@ Route::middleware('auth')->name('user.')->group(function () {
                 Route::get('profile-education', 'education')->name('profile.education');
                 Route::post('profile-education-store', 'submitEducations')->name('store.profile.education');
 
+                Route::get('profile-bank-details', 'bankDetails')->name('profile.bank');
+                Route::post('profile-bank-details-store', 'submitBankDetails')->name('store.profile.bank');
+
                 Route::get('profile-portfolio', 'portfolio')->name('profile.portfolio');
                 Route::post('store-profile-portfolio/{id?}', 'submitPortfolios')->name('store.profile.portfolio');
                 Route::post('status-profile-portfolio/{id}', 'statusPortfolio')->name('status.profile.portfolio');
@@ -124,6 +127,7 @@ Route::middleware('auth')->name('user.')->group(function () {
 
             //Conversation
             Route::controller('ConversationController')->prefix('conversation')->name('conversation.')->group(function () {
+                Route::get('from-job/{postedJob}', 'fromPostedJob')->name('from_job');
                 Route::get('/{conversation_id?}', 'index')->name('index');
                 Route::post('store/{conversation_id}', 'conversationStore')->name('store');
             });

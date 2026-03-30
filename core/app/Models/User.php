@@ -13,6 +13,19 @@ class User extends Authenticatable
 {
     use HasApiTokens, UserNotify, GlobalStatus;
 
+    /** @var list<string> */
+    protected $fillable = [
+        'firstname', 'lastname', 'username', 'email', 'dial_code', 'mobile',
+        'country_name', 'country_code', 'country', 'city', 'state', 'zip', 'pincode',
+        'address', 'about', 'tagline', 'image', 'skill_ids', 'skills',
+        'preferred_state', 'preferred_city',
+        'bank_name', 'bank_account_number', 'bank_ifsc', 'bank_account_holder_name', 'upi_id',
+        'account_number', 'ifsc_code', 'account_holder_name',
+        'referral_code', 'referred_by', 'referred_by_user_id',
+        'profile_complete', 'work_profile_complete', 'step', 'badge_setting_id',
+        'ev', 'sv', 'kv', 'status', 'ts', 'tv', 'tsc', 'language',
+    ];
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -24,6 +37,11 @@ class User extends Authenticatable
         'ver_code',
         'balance',
         'kyc_data',
+        'bank_account_number',
+        'bank_ifsc',
+        'upi_id',
+        'account_number',
+        'ifsc_code',
     ];
 
     /**
@@ -37,6 +55,7 @@ class User extends Authenticatable
         'ver_code_send_at'  => 'datetime',
         'language'          => 'object',
         'skill_ids'         => 'array',
+        'skills'            => 'array',
     ];
     public function bids()
     {
@@ -213,6 +232,22 @@ class User extends Authenticatable
     public function studentProfile()
     {
         return $this->hasOne(StudentProfile::class);
+    }
+
+    /**
+     * True when user can request withdrawal: UPI id and/or bank account + IFSC are set.
+     */
+    public function hasWithdrawalPayoutDetails(): bool
+    {
+        $upi = trim((string) ($this->upi_id ?? ''));
+        if ($upi !== '') {
+            return true;
+        }
+
+        $account = trim((string) ($this->bank_account_number ?? $this->account_number ?? ''));
+        $ifsc = trim((string) ($this->bank_ifsc ?? $this->ifsc_code ?? ''));
+
+        return $account !== '' && $ifsc !== '';
     }
 
 }

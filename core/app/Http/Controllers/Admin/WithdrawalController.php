@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
+use App\Models\Wallet;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
 
@@ -156,6 +157,10 @@ class WithdrawalController extends Controller
         $transaction->details = 'Refunded for withdrawal rejection';
         $transaction->trx = $withdraw->trx;
         $transaction->save();
+
+        if ($withdraw->user) {
+            Wallet::syncBalanceMirrorFromUser($user);
+        }
 
         notify($user, 'WITHDRAW_REJECT', [
             'method_name' => $withdraw->method->name,

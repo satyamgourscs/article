@@ -9,6 +9,7 @@ use App\Models\Buyer;
 use App\Models\CompanyProfile;
 use App\Models\OtpVerification;
 use App\Models\StudentProfile;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
@@ -352,8 +353,8 @@ class OtpAuthService
                 $user->profile_complete = Status::YES;
             }
             $hasReferral = SafeSchema::usersReferralReady();
-            if ($hasReferral) {
-                $user->referral_code = $this->generateUniqueReferralCode();
+            if ($hasReferral && $user->username) {
+                $user->referral_code = $this->generateUniqueReferralCodeForUsername($user->username);
             }
             $user->save();
 
@@ -375,9 +376,11 @@ class OtpAuthService
                 );
             }
 
-            $bonus = (float) config('referral.signup_bonus_amount', 0);
+            $bonus = referralSignupBonusAmount();
             if ($referrer && $bonus > 0 && SafeSchema::walletCoreAvailable()) {
-                $this->creditUserWallet($user->id, $bonus, WalletTransaction::TYPE_CREDIT, 'referral', ['referrer_id' => $referrer->id]);
+                $this->creditUserWallet((int) $referrer->id, $bonus, WalletTransaction::TYPE_CREDIT, 'referral_reward', [
+                    'referred_user_id' => $user->id,
+                ]);
             }
 
             $adminNotification = new AdminNotification;
@@ -487,17 +490,26 @@ class OtpAuthService
         }
 
         DB::transaction(function () use ($userId, $amount, $type, $source, $meta) {
+            $user = User::query()->lockForUpdate()->find($userId);
+            if (! $user) {
+                return;
+            }
+
             $wallet = Wallet::firstOrCreate(
                 ['user_id' => $userId],
                 ['balance' => 0, 'total_earned' => 0, 'total_withdrawn' => 0]
             );
+
             if ($type === WalletTransaction::TYPE_CREDIT) {
-                $wallet->balance = (float) $wallet->balance + $amount;
+                $user->balance = (float) $user->balance + $amount;
                 $wallet->total_earned = (float) $wallet->total_earned + $amount;
             } else {
-                $wallet->balance = max(0, (float) $wallet->balance - $amount);
+                $user->balance = max(0, (float) $user->balance - $amount);
                 $wallet->total_withdrawn = (float) $wallet->total_withdrawn + $amount;
             }
+
+            $wallet->balance = (float) $user->balance;
+            $user->save();
             $wallet->save();
 
             WalletTransaction::create([
@@ -507,6 +519,25 @@ class OtpAuthService
                 'source' => $source,
                 'meta' => $meta ?: null,
             ]);
+
+            if (SafeSchema::hasTable('transactions') && SafeSchema::hasColumn('users', 'balance')) {
+                $line = new Transaction;
+                $line->user_id = $userId;
+                $line->amount = $amount;
+                $line->charge = 0;
+                $line->trx_type = $type === WalletTransaction::TYPE_CREDIT ? '+' : '-';
+                $line->post_balance = (float) $user->balance;
+                $line->trx = getTrx();
+                $line->remark = $source === 'referral_reward' ? 'referral_reward' : 'referral_wallet';
+                if ($source === 'referral_reward' && $type === WalletTransaction::TYPE_CREDIT) {
+                    $line->details = __('Referral bonus — a new student joined with your code.');
+                } else {
+                    $line->details = $type === WalletTransaction::TYPE_CREDIT
+                        ? __('Wallet credit: :source', ['source' => str_replace('_', ' ', $source)])
+                        : __('Wallet debit: :source', ['source' => str_replace('_', ' ', $source)]);
+                }
+                $line->save();
+            }
         });
     }
 
@@ -515,14 +546,24 @@ class OtpAuthService
         return bcrypt(Str::random(48));
     }
 
-    public function generateUniqueReferralCode(): string
+    /**
+     * Stable, shareable code: sanitized username + random digits (max 32 chars for DB).
+     */
+    public function generateUniqueReferralCodeForUsername(string $username): string
     {
         if (! SafeSchema::hasColumn('users', 'referral_code')) {
             return strtoupper(Str::random(8));
         }
 
+        $base = preg_replace('/[^a-zA-Z0-9]/', '', $username) ?: 'user';
+        $base = strtolower(substr($base, 0, 20));
+
         do {
-            $code = strtoupper(Str::random(8));
+            $suffix = (string) random_int(1000, 999999);
+            $code = strtoupper($base.$suffix);
+            if (strlen($code) > 32) {
+                $code = strtoupper(substr($base, 0, 32 - strlen($suffix)).$suffix);
+            }
         } while (User::where('referral_code', $code)->exists());
 
         return $code;

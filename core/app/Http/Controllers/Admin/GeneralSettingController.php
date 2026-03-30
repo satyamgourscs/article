@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Frontend;
 use App\Rules\FileTypeValidate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class GeneralSettingController extends Controller
 {
@@ -36,6 +37,7 @@ class GeneralSettingController extends Controller
             'currency_format' => 'required|in:1,2,3',
             'paginate_number' => 'required|integer',
             'fixed_service_charge' => 'required|numeric',
+            'referral_signup_bonus' => 'nullable|numeric|min:0',
         ]);
 
         $timezones = timezone_identifiers_list();
@@ -50,6 +52,9 @@ class GeneralSettingController extends Controller
         $general->secondary_color = str_replace('#', '', $request->secondary_color);
         $general->currency_format = $request->currency_format;
         $general->fixed_service_charge = $request->fixed_service_charge;
+        if (Schema::hasColumn($general->getTable(), 'referral_signup_bonus')) {
+            $general->referral_signup_bonus = $request->input('referral_signup_bonus', 0);
+        }
         $general->save();
 
         $timezoneFile = config_path('timezone.php');

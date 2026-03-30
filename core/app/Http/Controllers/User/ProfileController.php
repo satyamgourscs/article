@@ -14,6 +14,7 @@ use App\Rules\FileTypeValidate;
 use App\Support\SafeSchema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
@@ -86,12 +87,31 @@ class ProfileController extends Controller
         $studentProfile = $user->studentProfile;
         $expertiseLevels = config('student_profile.expertise_levels', []);
 
+        $selectedSkills = old('skills');
+        if (! is_array($selectedSkills)) {
+            $selectedSkills = [];
+            if (SafeSchema::hasColumn('student_profiles', 'skills')) {
+                $raw = $studentProfile->skills ?? null;
+                $selectedSkills = is_array($raw) ? $raw : [];
+            }
+        }
+        if (count($selectedSkills) === 0) {
+            $ids = is_array($user->skill_ids) ? array_filter($user->skill_ids) : [];
+            if (count($ids) > 0) {
+                $selectedSkills = Skill::whereIn('id', $ids)->pluck('name')->all();
+            }
+        }
+
+        $selectedSkillKeys = array_flip(array_map('mb_strtolower', $selectedSkills));
+
         return view('Template::user.profile.skill', compact(
             'pageTitle',
             'user',
             'skills',
             'studentProfile',
-            'expertiseLevels'
+            'expertiseLevels',
+            'selectedSkills',
+            'selectedSkillKeys'
         ));
     }
 
@@ -114,22 +134,55 @@ class ProfileController extends Controller
         $expertiseRule = count($levelKeysArr) ? 'nullable|string|in:'.implode(',', $levelKeysArr) : 'nullable|string|max:64';
 
         $request->validate([
-            'skill_ids' => 'required|array|min:1',
-            'skill_ids.*' => 'integer|exists:skills,id',
+            'skills' => 'required|array|min:1',
+            'skills.*' => 'required|string|max:100',
             'training_experience' => 'nullable|string',
             'experience_years' => 'nullable|string|max:32',
             'expertise_level' => $expertiseRule,
         ]);
 
-        $skillIds = array_values(array_unique(array_map('intval', $request->skill_ids)));
-        $user->skills()->sync($skillIds);
-        $user->skill_ids = $skillIds;
+        $seen = [];
+        $skillsList = [];
+        foreach ($request->skills as $raw) {
+            $t = trim((string) $raw);
+            if ($t === '') {
+                continue;
+            }
+            $k = mb_strtolower($t);
+            if (isset($seen[$k])) {
+                continue;
+            }
+            $seen[$k] = true;
+            $skillsList[] = $t;
+        }
+        if (count($skillsList) < 1) {
+            return back()->withErrors(['skills' => __('Select or add at least one skill.')])->withInput();
+        }
+
+        $skillIdsMatched = [];
+        foreach ($skillsList as $tag) {
+            $sk = Skill::query()->active()->whereRaw('LOWER(name) = ?', [mb_strtolower($tag)])->first();
+            if ($sk) {
+                $skillIdsMatched[] = (int) $sk->id;
+            }
+        }
+        $skillIdsMatched = array_values(array_unique($skillIdsMatched));
+        $user->skills()->sync($skillIdsMatched);
+        $user->skill_ids = $skillIdsMatched;
         if ($user->step < 2) {
             $user->step = 2;
         }
+        if (SafeSchema::hasColumn('users', 'skills')) {
+            $user->skills = $skillsList;
+        }
         $user->save();
 
-        $spData = ['training_experience' => $request->training_experience];
+        $spData = [
+            'training_experience' => $request->training_experience,
+        ];
+        if (SafeSchema::hasColumn('student_profiles', 'skills')) {
+            $spData['skills'] = $skillsList;
+        }
         if (SafeSchema::hasColumn('student_profiles', 'experience_years')) {
             $spData['experience_years'] = $request->experience_years;
         }
@@ -181,6 +234,9 @@ class ProfileController extends Controller
         $qualKeys = implode(',', array_keys(config('student_profile.qualifications', [])));
         $statusKeys = implode(',', array_keys(config('student_profile.education_statuses', [])));
 
+        $countryData = json_decode(file_get_contents(resource_path('views/partials/country.json')), true) ?: [];
+        $countryNames = array_values(array_unique(array_column($countryData, 'country')));
+
         $imageRule = 'nullable';
         $request->validate([
             'firstname' => 'required|string|max:80',
@@ -190,13 +246,13 @@ class ProfileController extends Controller
             'city' => 'nullable|string|max:120',
             'state' => 'nullable|string|max:120',
             'zip' => 'nullable|string|max:32',
+            'country' => ['required', 'string', Rule::in($countryNames)],
+            'country_code' => ['required', 'string', Rule::in(array_keys($countryData))],
             'short_bio' => 'nullable|string|max:5000',
             'qualification' => 'required|string|in:'.$qualKeys,
             'education_status' => 'required|string|in:'.$statusKeys,
             'preferred_domains' => 'nullable|array',
             'preferred_domains.*' => 'in:'.$domainKeys,
-            'preferred_state' => 'nullable|string|max:191',
-            'preferred_city' => 'nullable|string|max:191',
             'resume' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
             'image' => [$imageRule, new FileTypeValidate(['jpg', 'jpeg', 'png'])],
         ]);
@@ -220,6 +276,20 @@ class ProfileController extends Controller
         $user->city = $request->city;
         $user->state = $request->state;
         $user->zip = $request->zip;
+        if (SafeSchema::hasColumn('users', 'pincode')) {
+            $user->pincode = $request->input('pincode', $request->zip);
+        }
+        $user->country_name = $request->country;
+        $user->country_code = $request->country_code;
+        if (SafeSchema::hasColumn('users', 'country')) {
+            $user->country = $request->country ?: 'India';
+        }
+        if (SafeSchema::hasColumn('users', 'preferred_state')) {
+            $user->preferred_state = $request->state;
+        }
+        if (SafeSchema::hasColumn('users', 'preferred_city')) {
+            $user->preferred_city = $request->city;
+        }
         if ($request->has('short_bio')) {
             $user->about = $request->short_bio;
         }
@@ -250,8 +320,8 @@ class ProfileController extends Controller
                 'qualification' => $request->qualification,
                 'education_status' => $request->education_status,
                 'preferred_domains' => $domains,
-                'preferred_state' => $request->preferred_state,
-                'preferred_city' => $request->preferred_city,
+                'preferred_state' => $request->state,
+                'preferred_city' => $request->city,
                 'resume_path' => $resumePath,
             ]
         );
@@ -324,7 +394,79 @@ class ProfileController extends Controller
             $user->save();
         }
 
-        return redirect()->route('user.profile.portfolio')->with('success', 'Education updated successfully.');
+        $notify[] = ['success', __('Education updated successfully.')];
+
+        return redirect()->route('user.profile.bank')->withNotify($notify);
+    }
+
+    public function bankDetails()
+    {
+        if (! SafeSchema::hasColumn('users', 'upi_id')) {
+            $notify[] = ['warning', __('Bank details are not available yet. Ask the administrator to run database migrations (php artisan migrate).')];
+
+            return to_route('user.home')->withNotify($notify);
+        }
+
+        $pageTitle = __('Bank details');
+        $user = auth()->user();
+
+        return view('Template::user.profile.bank', compact('pageTitle', 'user'));
+    }
+
+    public function submitBankDetails(Request $request)
+    {
+        if (! SafeSchema::hasColumn('users', 'upi_id')) {
+            $notify[] = ['warning', __('Bank details are not available yet. Ask the administrator to run database migrations (php artisan migrate).')];
+
+            return to_route('user.home')->withNotify($notify);
+        }
+
+        $request->validate([
+            'bank_name' => 'nullable|string|max:191',
+            'bank_account_number' => 'nullable|string|max:64',
+            'account_number' => 'nullable|string|max:64',
+            'bank_ifsc' => 'nullable|string|max:32',
+            'ifsc_code' => 'nullable|string|max:32',
+            'bank_account_holder_name' => 'nullable|string|max:191',
+            'account_holder_name' => 'nullable|string|max:191',
+            'upi_id' => 'nullable|string|max:255',
+        ]);
+
+        $clean = static fn ($v) => ($v === null || $v === '' || trim((string) $v) === '') ? null : trim((string) $v);
+
+        $user = auth()->user();
+        $user->bank_name = $clean($request->bank_name);
+        $acct = $clean($request->bank_account_number);
+        if ($acct === null) {
+            $acct = $clean($request->account_number);
+        }
+        $user->bank_account_number = $acct;
+        if (SafeSchema::hasColumn('users', 'account_number')) {
+            $user->account_number = $acct;
+        }
+        $ifscRaw = $clean($request->bank_ifsc);
+        if ($ifscRaw === null) {
+            $ifscRaw = $clean($request->ifsc_code);
+        }
+        $ifsc = $ifscRaw !== null ? strtoupper($ifscRaw) : null;
+        $user->bank_ifsc = $ifsc;
+        if (SafeSchema::hasColumn('users', 'ifsc_code')) {
+            $user->ifsc_code = $ifsc;
+        }
+        $holder = $clean($request->bank_account_holder_name);
+        if ($holder === null) {
+            $holder = $clean($request->account_holder_name);
+        }
+        $user->bank_account_holder_name = $holder;
+        if (SafeSchema::hasColumn('users', 'account_holder_name')) {
+            $user->account_holder_name = $holder;
+        }
+        $user->upi_id = $clean($request->upi_id);
+        $user->save();
+
+        $notify[] = ['success', __('Bank details saved.')];
+
+        return to_route('user.profile.portfolio')->withNotify($notify);
     }
 
     /**

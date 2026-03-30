@@ -7,8 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\AdminNotification;
 use App\Models\Transaction;
+use App\Models\Wallet;
 use App\Models\Withdrawal;
 use App\Models\WithdrawMethod;
+use App\Support\SafeSchema;
 use Illuminate\Http\Request;
 
 class WithdrawController extends Controller
@@ -30,6 +32,11 @@ class WithdrawController extends Controller
         ]);
         $method = WithdrawMethod::where('id', $request->method_code)->active()->firstOrFail();
         $user = auth()->user();
+        if (SafeSchema::hasColumn('users', 'upi_id') && ! $user->hasWithdrawalPayoutDetails()) {
+            $notify[] = ['error', __('Add your UPI ID and/or bank account number with IFSC in Profile → Bank details before withdrawing.')];
+
+            return back()->withNotify($notify)->withInput($request->all());
+        }
         if ($request->amount < $method->min_limit) {
             $notify[] = ['error', 'Your requested amount is smaller than minimum amount'];
             return back()->withNotify($notify)->withInput($request->all());
@@ -94,6 +101,11 @@ class WithdrawController extends Controller
         $userData = $formProcessor->processFormData($request, $formData);
 
         $user = auth()->user();
+        if (SafeSchema::hasColumn('users', 'upi_id') && ! $user->hasWithdrawalPayoutDetails()) {
+            $notify[] = ['error', __('Add your UPI ID and/or bank account number with IFSC in Profile → Bank details before withdrawing.')];
+
+            return back()->withNotify($notify)->withInput($request->all());
+        }
         if ($user->ts) {
             $response = verifyG2fa($user,$request->authenticator_code);
             if (!$response) {
@@ -123,6 +135,8 @@ class WithdrawController extends Controller
         $transaction->trx = $withdraw->trx;
         $transaction->remark = 'withdraw';
         $transaction->save();
+
+        Wallet::syncBalanceMirrorFromUser($user);
 
         $adminNotification = new AdminNotification();
         $adminNotification->user_id = $user->id;

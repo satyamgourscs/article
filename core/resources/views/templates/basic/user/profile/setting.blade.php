@@ -71,32 +71,20 @@
                                     </div>
                                 </div>
 
+                                @php
+                                    $locStateVal = old('state', $user->state ?? '');
+                                    $locCityVal = old('city', $user->city ?? '');
+                                    $locZipVal = old('zip', $user->zip ?? '');
+                                @endphp
                                 <h6 class="mt-4 mb-2">@lang('Location')</h6>
+                                <p class="text-muted small mb-2">@lang('India only. Search state and city, or enter a 6-digit pincode to auto-fill.')</p>
                                 <div class="row">
                                     <div class="form-group col-sm-12">
                                         <label class="form-label">@lang('Address')</label>
                                         <input type="text" class="form-control form--control" name="address"
                                             value="{{ old('address', $user->address) }}">
                                     </div>
-                                    <div class="form-group col-sm-6">
-                                        <label class="form-label">@lang('State')</label>
-                                        <input type="text" class="form-control form--control" name="state"
-                                            value="{{ old('state', $user->state) }}">
-                                    </div>
-                                    <div class="form-group col-sm-6">
-                                        <label class="form-label">@lang('City')</label>
-                                        <input type="text" class="form-control form--control" name="city"
-                                            value="{{ old('city', $user->city) }}">
-                                    </div>
-                                    <div class="form-group col-sm-6">
-                                        <label class="form-label">@lang('Zip code')</label>
-                                        <input type="text" class="form-control form--control" name="zip"
-                                            value="{{ old('zip', $user->zip) }}">
-                                    </div>
-                                    <div class="form-group col-sm-6">
-                                        <label class="form-label">@lang('Country')</label>
-                                        <input class="form-control form--control" value="{{ $user->country_name }}" disabled>
-                                    </div>
+                                    @include('Template::partials.india_location_form_fields', ['user' => $user])
                                 </div>
 
                                 <h6 class="mt-4 mb-2">@lang('Interested domains (optional)')</h6>
@@ -119,31 +107,6 @@
                                         </div>
                                     @endforeach
                                 </div>
-                                @php
-                                    $preferredStateVal = old('preferred_state', $user->studentProfile?->preferred_state ?? '');
-                                    $preferredCityVal = old('preferred_city', $user->studentProfile?->preferred_city ?? '');
-                                @endphp
-                                <div class="row gy-3 mt-1">
-                                    <div class="form-group col-md-6">
-                                        <label class="form--label">@lang('Preferred state')</label>
-                                        <div class="position-relative">
-                                            <select name="preferred_state" id="profilePreferredState"
-                                                class="form-select form--control select2-india-pref-state">
-                                                <option value=""></option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label class="form--label">@lang('Preferred city')</label>
-                                        <div class="position-relative">
-                                            <select name="preferred_city" id="profilePreferredCity"
-                                                class="form-select form--control select2-india-pref-city">
-                                                <option value=""></option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <div class="form-group mt-4">
                                     <label class="form--label">@lang('Resume (PDF, optional)')</label>
                                     <input type="file" name="resume" class="form-control form--control" accept=".pdf,application/pdf">
@@ -173,28 +136,27 @@
 
 @push('script-lib')
     <script src="{{ asset('assets/global/js/select2.min.js') }}"></script>
-    <script src="{{ asset('assets/global/js/india-preferred-location-select2.js') }}"></script>
+    <script src="{{ asset('assets/global/js/india-location-api-select2.js') }}"></script>
 @endpush
 @push('style-lib')
     <link href="{{ asset('assets/global/css/select2.min.css') }}" rel="stylesheet">
 @endpush
 @push('script')
     <script>
-        window.INDIA_STATE_CITY_MAP = @json(config('india_locations'));
-    </script>
-    <script>
         (function($) {
             'use strict';
             $(function() {
-                initIndiaPreferredLocationSelect2({
-                    stateSelect: '#profilePreferredState',
-                    citySelect: '#profilePreferredCity',
-                    stateDropdownParent: $('#profilePreferredState').closest('.position-relative'),
-                    cityDropdownParent: $('#profilePreferredCity').closest('.position-relative'),
-                    initialState: @json($preferredStateVal),
-                    initialCity: @json($preferredCityVal),
-                    placeholderState: @json(__('Search or select state (optional)')),
-                    placeholderCity: @json(__('Search or select city (optional)'))
+                initIndiaLocationApiSelect2({
+                    stateSelect: '#state',
+                    citySelect: '#city',
+                    pincodeInput: '#pincode',
+                    stateDropdownParent: $('#state').closest('.position-relative'),
+                    cityDropdownParent: $('#city').closest('.position-relative'),
+                    initialState: @json($locStateVal),
+                    initialCity: @json($locCityVal),
+                    initialPincode: @json($locZipVal),
+                    placeholderState: @json(__('Search or select state')),
+                    placeholderCity: @json(__('Search or select city'))
                 });
             });
         })(jQuery);

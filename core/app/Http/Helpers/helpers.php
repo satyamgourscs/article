@@ -470,6 +470,23 @@ function gs($key = null)
     if ($key) return @$general->$key;
     return $general;
 }
+
+/** Bonus amount credited to the referrer when a new student signs up with a valid code (admin + config fallback). */
+function referralSignupBonusAmount(): float
+{
+    try {
+        if (\App\Support\SafeSchema::hasColumn('general_settings', 'referral_signup_bonus')) {
+            $v = gs('referral_signup_bonus');
+            if ($v !== null && $v !== '') {
+                return max(0, (float) $v);
+            }
+        }
+    } catch (\Throwable) {
+        // ignore
+    }
+
+    return max(0, (float) config('referral.signup_bonus_amount', 0));
+}
 function isImage($string)
 {
     $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');

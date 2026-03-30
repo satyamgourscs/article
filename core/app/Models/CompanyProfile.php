@@ -13,6 +13,8 @@ class CompanyProfile extends Model
         'firm_type',
         'state',
         'city',
+        'pincode',
+        'country',
     ];
 
     public function buyer(): BelongsTo

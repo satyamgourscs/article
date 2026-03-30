@@ -27,6 +27,39 @@
                     </div>
                 </div>
             @endif
+            @if (\App\Support\SafeSchema::usersReferralReady() && $user->referral_code)
+                <div class="col-12">
+                    <div class="card custom--card">
+                        <div class="card-body">
+                            <h5 class="mb-2"><i class="las la-gift text--base"></i> @lang('Refer & Earn')</h5>
+                            @if (referralSignupBonusAmount() > 0)
+                                <p class="text-muted small mb-3">
+                                    @lang('Share your code or link. When someone completes student signup with it, you receive :amount.', ['amount' => showAmount(referralSignupBonusAmount())])
+                                </p>
+                            @else
+                                <p class="text-muted small mb-3">@lang('Share your student signup link. Referral bonuses are currently disabled in settings.')</p>
+                            @endif
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                <code class="px-3 py-2 rounded border" id="dashboardReferralCode">{{ $user->referral_code }}</code>
+                                <button type="button" class="btn btn--dark btn--sm" id="copyReferralBtn" data-copy="{{ $user->referral_code }}">@lang('Copy code')</button>
+                                @if (! empty($referralShareUrl))
+                                    <button type="button" class="btn btn-outline--base btn--sm" id="copyReferralLinkBtn" data-url="{{ $referralShareUrl }}">@lang('Copy signup link')</button>
+                                    <button type="button" class="btn btn--base btn--sm" id="shareReferralBtn"
+                                        data-url="{{ $referralShareUrl }}"
+                                        data-title="{{ gs('site_name') }}">@lang('Share')</button>
+                                    <a href="{{ $referralShareUrl }}" class="btn btn-outline--dark btn--sm" target="_blank" rel="noopener">@lang('Open link')</a>
+                                @endif
+                            </div>
+                            @if (($referralsCount ?? 0) > 0)
+                                <p class="small mb-0 text-muted">@lang('Students referred'): <strong>{{ $referralsCount }}</strong></p>
+                            @endif
+                            @if (walletSchemaReady())
+                                <a href="{{ route('user.referral_wallet.index') }}" class="small d-inline-block mt-2">@lang('Referral wallet & withdrawals') →</a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="dashboard-body-wrapper mt-4">
@@ -468,6 +501,35 @@
                 var chart = new ApexCharts(chartEl, options);
                 chart.render();
             }
+
+            function acCopyReferral(text) {
+                if (!text) return;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).catch(function() {});
+                } else {
+                    var ta = document.createElement('textarea');
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    try { document.execCommand('copy'); } catch (e) {}
+                    document.body.removeChild(ta);
+                }
+            }
+            $('#copyReferralBtn').on('click', function() {
+                acCopyReferral($(this).data('copy'));
+            });
+            $('#copyReferralLinkBtn').on('click', function() {
+                acCopyReferral($(this).data('url'));
+            });
+            $('#shareReferralBtn').on('click', function() {
+                var url = $(this).data('url');
+                var title = $(this).data('title') || '';
+                if (navigator.share) {
+                    navigator.share({ title: title, text: title, url: url }).catch(function() {});
+                } else {
+                    acCopyReferral(url);
+                }
+            });
 
             $('.seeInstructionBtn').on('click', function() {
                 var modal = $('#profileInstructionModal');

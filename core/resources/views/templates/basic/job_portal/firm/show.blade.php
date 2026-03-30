@@ -46,6 +46,10 @@
                                     <option value="{{ \App\Models\JobApplication::STATUS_REJECTED }}" @selected($application->status === \App\Models\JobApplication::STATUS_REJECTED)>@lang('Rejected')</option>
                                 </select>
                                 <button type="submit" class="btn btn--sm btn-outline--base">@lang('Update')</button>
+                                @if ($application->status === \App\Models\JobApplication::STATUS_SELECTED)
+                                    <a href="{{ route('buyer.conversation.job.portal', [$postedJob, $application->user]) }}"
+                                        class="btn btn--sm btn--base">@lang('Chat')</a>
+                                @endif
                             </form>
                         </td>
                     </tr>

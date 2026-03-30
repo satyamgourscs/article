@@ -71,7 +71,9 @@
                                         </div>
                                         <div class="col-12">
                                             <label class="form--label">@lang('Referral code (optional)')</label>
-                                            <input type="text" id="suStReferral" class="form-control form--control" maxlength="32">
+                                            <input type="text" id="suStReferral" class="form-control form--control" maxlength="32"
+                                                value="{{ old('ref', request()->query('ref', '')) }}" placeholder="@lang('Referral code from a friend')" autocomplete="off">
+                                            <small class="text-muted">@lang('If a friend invited you, enter their code here.')</small>
                                         </div>
                                     </div>
                                     <button type="button" class="btn btn--base w-100 mt-4" id="suStContinueOtp">@lang('Continue with OTP')</button>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Conversation;
 use App\Models\JobApplication;
 use App\Models\PostedJob;
 use Illuminate\Http\Request;
@@ -137,6 +138,17 @@ class PostedJobController extends Controller
         ]);
 
         $jobApplication->update(['status' => $request->status]);
+
+        if ($request->status === JobApplication::STATUS_SELECTED) {
+            Conversation::firstOrCreate(
+                [
+                    'buyer_id' => $postedJob->buyer_id,
+                    'user_id'  => $jobApplication->user_id,
+                ],
+                []
+            );
+        }
+
         $notify[] = ['success', __('Application updated.')];
 
         return back()->withNotify($notify);

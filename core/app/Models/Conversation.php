@@ -10,6 +10,7 @@ class Conversation extends Model
 {
     use GlobalStatus;
 
+    /** Job-portal / chat: user_id = student (user_one), buyer_id = CA firm (user_two). */
     protected $fillable = [
         'job_id',
         'buyer_id',

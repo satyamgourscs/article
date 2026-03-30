@@ -1,6 +1,15 @@
 @extends($activeTemplate . 'layouts.master')
 @section('content')
     <div class="container my-60">
+        @php
+            $payoutOk = ! \App\Support\SafeSchema::hasColumn('users', 'upi_id') || auth()->user()->hasWithdrawalPayoutDetails();
+        @endphp
+        @if (! $payoutOk)
+            <div class="alert alert-warning mb-3" role="alert">
+                @lang('Add your UPI ID and/or bank account number with IFSC in Profile → Bank details before withdrawing.')
+                <a href="{{ route('user.profile.bank') }}" class="alert-link">@lang('Open bank details')</a>
+            </div>
+        @endif
         <form action="{{ route('user.withdraw.money') }}" method="post" class="withdraw-form">
             @csrf
             <div class="gateway-card">

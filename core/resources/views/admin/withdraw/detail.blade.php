@@ -27,6 +27,21 @@
                                         href="{{ route('admin.users.detail', $withdrawal->user_id) }}"><span>@</span>{{ @$withdrawal->user->username }}</a>
                                 </span>
                             </li>
+                            @php $u = $withdrawal->user; @endphp
+                            <li class="list-group-item">
+                                <h6 class="mb-2">@lang('Student payout details (profile)')</h6>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li><span class="text-muted">@lang('Bank'):</span>
+                                        {{ $u->bank_name ?: '—' }}</li>
+                                    <li><span class="text-muted">@lang('Account holder'):</span>
+                                        {{ $u->bank_account_holder_name ?: '—' }}</li>
+                                    <li><span class="text-muted">@lang('Account no.'):</span>
+                                        {{ $u->bank_account_number ?: '—' }}</li>
+                                    <li><span class="text-muted">@lang('IFSC'):</span>
+                                        {{ $u->bank_ifsc ?: '—' }}</li>
+                                    <li><span class="text-muted">@lang('UPI'):</span> {{ $u->upi_id ?: '—' }}</li>
+                                </ul>
+                            </li>
                         @else
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 @lang('Username')

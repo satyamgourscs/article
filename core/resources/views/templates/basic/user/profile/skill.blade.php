@@ -14,11 +14,16 @@
                                     <h5 class="mb-3">@lang('Skills') <span class="text--danger">*</span></h5>
                                     <p class="text-muted small mb-3">@lang('Select your core skills. Add custom tags with comma or Enter.')</p>
                                     <div class="form-group">
-                                        <select class="form-select form--control select2-skills" name="skill_ids[]" multiple="multiple" required>
+                                        <select class="form-select form--control select2-skills" name="skills[]" multiple="multiple" required>
                                             @foreach ($skills as $skill)
-                                                <option value="{{ $skill->id }}" @selected(in_array($skill->id, old('skill_ids', $user->skill_ids ?? []), true))>
+                                                <option value="{{ $skill->name }}" @selected(isset($selectedSkillKeys[mb_strtolower($skill->name)]))>
                                                     {{ __($skill->name) }}
                                                 </option>
+                                            @endforeach
+                                            @foreach ($selectedSkills ?? [] as $tag)
+                                                @if (! $skills->contains(fn ($s) => mb_strtolower((string) $s->name) === mb_strtolower((string) $tag)))
+                                                    <option value="{{ $tag }}" selected>{{ $tag }}</option>
+                                                @endif
                                             @endforeach
                                         </select>
                                     </div>
@@ -82,9 +87,10 @@
             'use strict';
             $('.select2-skills').each(function() {
                 $(this).wrap('<div class="position-relative"></div>').select2({
-                    tags: false,
+                    tags: true,
+                    tokenSeparators: [','],
                     maximumSelectionLength: 25,
-                    placeholder: @json(__('Select skills')),
+                    placeholder: @json(__('Select or type skills, separate with comma')),
                     dropdownParent: $(this).parent()
                 });
             });

@@ -121,7 +121,7 @@
             </li>
 
             <li
-                class="sidebar-menu-list__item {{ menuActive(['user.profile.setting', 'user.profile.skill', 'user.profile.education', 'user.profile.portfolio', 'user.change.password', 'user.twofactor']) }} has-dropdown">
+                class="sidebar-menu-list__item {{ menuActive(['user.profile.setting', 'user.profile.skill', 'user.profile.education', 'user.profile.bank', 'user.profile.portfolio', 'user.change.password', 'user.twofactor']) }} has-dropdown">
                 <a href="javascript:void(0)" class="sidebar-menu-list__link">
                     <span class="icon"><i class="las la-cog"></i></span>
                     <span class="text"> @lang('Settings') </span>

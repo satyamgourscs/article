@@ -124,6 +124,7 @@ Route::middleware('buyer')->name('buyer.')->group(function () {
             Route::controller('ConversationController')->prefix('conversation')->name('conversation.')->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('bid-chat/{id}', 'bidChat')->middleware('legacy.bidding')->name('bid');
+                Route::get('job-portal/{postedJob}/{user}', 'jobPortalChat')->name('job.portal');
                 Route::get('/{id}', 'conversation')->name('start');
                 Route::post('store/{id}', 'conversationStore')->name('store');
                 Route::post('block-status/{id}', 'blockStatus')->name('block');

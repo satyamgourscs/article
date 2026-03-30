@@ -10,6 +10,7 @@ use App\Models\NotificationLog;
 use App\Models\Project;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\Wallet;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -267,6 +268,8 @@ class ManageUsersController extends Controller
         $transaction->trx =  $trx;
         $transaction->details = $request->remark;
         $transaction->save();
+
+        Wallet::syncBalanceMirrorFromUser($user);
 
         notify($user, $notifyTemplate, [
             'trx' => $trx,

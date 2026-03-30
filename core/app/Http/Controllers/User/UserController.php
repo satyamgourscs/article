@@ -10,6 +10,9 @@ use App\Models\DeviceToken;
 use App\Models\JobApplication;
 use App\Models\Project;
 use App\Models\Transaction;
+use App\Models\User as UserModel;
+use App\Services\OtpAuthService;
+use App\Support\SafeSchema;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +26,19 @@ class UserController extends Controller
     {
         $pageTitle = 'Dashboard';
         $user      = auth()->user();
+
+        if (SafeSchema::usersReferralReady() && $user->username && empty($user->referral_code)) {
+            $user->referral_code = app(OtpAuthService::class)->generateUniqueReferralCodeForUsername($user->username);
+            $user->save();
+        }
+
+        $referralsCount = SafeSchema::usersReferralReady()
+            ? UserModel::where('referred_by_user_id', $user->id)->count()
+            : 0;
+
+        $referralShareUrl = (SafeSchema::usersReferralReady() && ! empty($user->referral_code))
+            ? route('signup.student', ['ref' => $user->referral_code])
+            : '';
 
         if (! legacyBiddingEnabled() && jobPortalSchemaReady()) {
             $applicationQuery = JobApplication::where('user_id', $user->id);
@@ -42,7 +58,7 @@ class UserController extends Controller
             $profileCompletion      = calculateProfileCompletion($user);
             $profileCompletionBadge = getProfileCompletionBadge($user);
 
-            return view('Template::user.dashboard', compact('pageTitle', 'user', 'widget', 'bids', 'projects', 'monthlyData', 'profileCompletion', 'profileCompletionBadge', 'recentApplications'));
+            return view('Template::user.dashboard', compact('pageTitle', 'user', 'widget', 'bids', 'projects', 'monthlyData', 'profileCompletion', 'profileCompletionBadge', 'recentApplications', 'referralsCount', 'referralShareUrl'));
         }
 
         $bids = Bid::searchable(['job:title'])->where('user_id', $user->id)->with(['job', 'buyer', 'project'])->orderBy('id', 'DESC')->take(10)->get();
@@ -61,7 +77,7 @@ class UserController extends Controller
         $profileCompletionBadge = getProfileCompletionBadge($user);
         $recentApplications     = null;
 
-        return view('Template::user.dashboard', compact('pageTitle', 'user', 'widget', 'bids', 'projects', 'monthlyData', 'profileCompletion', 'profileCompletionBadge', 'recentApplications'));
+        return view('Template::user.dashboard', compact('pageTitle', 'user', 'widget', 'bids', 'projects', 'monthlyData', 'profileCompletion', 'profileCompletionBadge', 'recentApplications', 'referralsCount', 'referralShareUrl'));
     }
 
     protected function emptyMonthlyReportPlaceholder()
