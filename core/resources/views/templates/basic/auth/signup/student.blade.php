@@ -55,11 +55,19 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form--label">@lang('Preferred state')</label>
-                                            <input type="text" id="suStState" class="form-control form--control">
+                                            <div class="position-relative">
+                                                <select id="suStState" class="form-select form--control">
+                                                    <option value=""></option>
+                                                </select>
+                                            </div>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form--label">@lang('Preferred city')</label>
-                                            <input type="text" id="suStCity" class="form-control form--control">
+                                            <div class="position-relative">
+                                                <select id="suStCity" class="form-select form--control">
+                                                    <option value=""></option>
+                                                </select>
+                                            </div>
                                         </div>
                                         <div class="col-12">
                                             <label class="form--label">@lang('Referral code (optional)')</label>
@@ -95,7 +103,51 @@
     @include('Template::partials.otp_signup_modal')
 @endsection
 
+@push('script-lib')
+    <script src="{{ asset('assets/global/js/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/global/js/india-preferred-location-select2.js') }}"></script>
+@endpush
+@push('style-lib')
+    <link href="{{ asset('assets/global/css/select2.min.css') }}" rel="stylesheet">
+@endpush
+@push('style')
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+        .select2-container--default .select2-selection--single {
+            min-height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;
+            border: 1px solid var(--border-color, #ced4da);
+            border-radius: 0.375rem;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 1.5;
+            padding-left: 0;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100%;
+        }
+    </style>
+@endpush
 @push('script')
+    <script>
+        window.INDIA_STATE_CITY_MAP = @json(config('india_locations'));
+    </script>
+    <script>
+        (function($) {
+            $(function() {
+                initIndiaPreferredLocationSelect2({
+                    stateSelect: '#suStState',
+                    citySelect: '#suStCity',
+                    stateDropdownParent: $('#suStState').closest('.position-relative'),
+                    cityDropdownParent: $('#suStCity').closest('.position-relative'),
+                    placeholderState: @json(__('Search or select state (optional)')),
+                    placeholderCity: @json(__('Search or select city (optional)'))
+                });
+            });
+        })(jQuery);
+    </script>
     <script>
         (function() {
             const root = document.getElementById('signupStudentRoot');
@@ -147,8 +199,8 @@
                     contact: root.querySelector('#suStContact').value.trim(),
                     qualification: root.querySelector('#suStQual').value,
                     preferred_domains: domains,
-                    preferred_state: root.querySelector('#suStState').value.trim(),
-                    preferred_city: root.querySelector('#suStCity').value.trim(),
+                    preferred_state: (root.querySelector('#suStState').value || '').trim(),
+                    preferred_city: (root.querySelector('#suStCity').value || '').trim(),
                     referral_code: root.querySelector('#suStReferral').value.trim(),
                 };
                 const startR = await post(root.dataset.startUrl, fd(body));
@@ -175,6 +227,9 @@
                 root.querySelector('#stepDetails').querySelectorAll('input,select,button').forEach(el => {
                     if (el.id !== 'suStContinueOtp') el.disabled = true;
                 });
+                if (window.jQuery && jQuery.fn.select2) {
+                    jQuery('#suStState, #suStCity').prop('disabled', true).trigger('change');
+                }
                 root.querySelector('#suStContinueOtp').classList.add('d-none');
             });
 

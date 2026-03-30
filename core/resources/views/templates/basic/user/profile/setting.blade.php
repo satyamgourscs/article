@@ -119,16 +119,28 @@
                                         </div>
                                     @endforeach
                                 </div>
+                                @php
+                                    $preferredStateVal = old('preferred_state', $user->studentProfile?->preferred_state ?? '');
+                                    $preferredCityVal = old('preferred_city', $user->studentProfile?->preferred_city ?? '');
+                                @endphp
                                 <div class="row gy-3 mt-1">
                                     <div class="form-group col-md-6">
                                         <label class="form--label">@lang('Preferred state')</label>
-                                        <input type="text" name="preferred_state" class="form-control form--control"
-                                            value="{{ old('preferred_state', $user->studentProfile?->preferred_state ?? '') }}">
+                                        <div class="position-relative">
+                                            <select name="preferred_state" id="profilePreferredState"
+                                                class="form-select form--control select2-india-pref-state">
+                                                <option value=""></option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="form--label">@lang('Preferred city')</label>
-                                        <input type="text" name="preferred_city" class="form-control form--control"
-                                            value="{{ old('preferred_city', $user->studentProfile?->preferred_city ?? '') }}">
+                                        <div class="position-relative">
+                                            <select name="preferred_city" id="profilePreferredCity"
+                                                class="form-select form--control select2-india-pref-city">
+                                                <option value=""></option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -158,3 +170,53 @@
         </div>
     </div>
 @endsection
+
+@push('script-lib')
+    <script src="{{ asset('assets/global/js/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/global/js/india-preferred-location-select2.js') }}"></script>
+@endpush
+@push('style-lib')
+    <link href="{{ asset('assets/global/css/select2.min.css') }}" rel="stylesheet">
+@endpush
+@push('script')
+    <script>
+        window.INDIA_STATE_CITY_MAP = @json(config('india_locations'));
+    </script>
+    <script>
+        (function($) {
+            'use strict';
+            $(function() {
+                initIndiaPreferredLocationSelect2({
+                    stateSelect: '#profilePreferredState',
+                    citySelect: '#profilePreferredCity',
+                    stateDropdownParent: $('#profilePreferredState').closest('.position-relative'),
+                    cityDropdownParent: $('#profilePreferredCity').closest('.position-relative'),
+                    initialState: @json($preferredStateVal),
+                    initialCity: @json($preferredCityVal),
+                    placeholderState: @json(__('Search or select state (optional)')),
+                    placeholderCity: @json(__('Search or select city (optional)'))
+                });
+            });
+        })(jQuery);
+    </script>
+@endpush
+@push('style')
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+        .select2-container--default .select2-selection--single {
+            min-height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;
+            border: 1px solid var(--border-color, #ced4da);
+            border-radius: 0.375rem;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 1.5;
+            padding-left: 0;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100%;
+        }
+    </style>
+@endpush
