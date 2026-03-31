@@ -27,6 +27,12 @@ class JobApplication extends Model
         return $this->belongsTo(PostedJob::class, 'job_id');
     }
 
+    /** Same as postedJob; use for policy checks (whereHas('job', …)). */
+    public function job(): BelongsTo
+    {
+        return $this->belongsTo(PostedJob::class, 'job_id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

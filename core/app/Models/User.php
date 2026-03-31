@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Constants\Status;
+use App\Services\SubscriptionService;
 use App\Support\SafeSchema;
 use App\Traits\GlobalStatus;
 use App\Traits\UserNotify;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -25,6 +27,7 @@ class User extends Authenticatable
         'referral_code', 'referred_by', 'referred_by_user_id',
         'profile_complete', 'work_profile_complete', 'step', 'badge_setting_id',
         'ev', 'sv', 'kv', 'status', 'ts', 'tv', 'tsc', 'language',
+        'cv',
     ];
 
     /**
@@ -398,6 +401,91 @@ class User extends Authenticatable
         }
 
         return false;
+    }
+
+    /**
+     * Merged CV path: disk storage (cv/…) or legacy student_profiles.resume_path.
+     */
+    public function getCvAttribute($value): ?string
+    {
+        if ($value !== null && $value !== '') {
+            return $value;
+        }
+
+        if ($this->relationLoaded('studentProfile')) {
+            return $this->studentProfile?->resume_path;
+        }
+
+        return $this->studentProfile()->value('resume_path');
+    }
+
+    /**
+     * Subscription tier for Blade checks (e.g. @if($user->plan !== 'free')).
+     */
+    public function getPlanAttribute(): string
+    {
+        return $this->isPaid() ? 'paid' : 'free';
+    }
+
+    public function isPaid(): bool
+    {
+        if (! SafeSchema::subscriptionsAvailable()) {
+            return false;
+        }
+        $p = app(SubscriptionService::class)->getUserPlan($this->id);
+
+        return $p !== null && (float) $p->price > 0.0;
+    }
+
+    /**
+     * Public download URL for CV only if the file exists. Never exposes raw disk paths in UI.
+     */
+    public function getCvPublicUrlAttribute(): ?string
+    {
+        $rawCv = $this->attributes['cv'] ?? null;
+        if (is_string($rawCv) && $rawCv !== '' && ! str_contains($rawCv, '..')) {
+            if (str_starts_with($rawCv, 'cv/') && Storage::disk('public')->exists($rawCv)) {
+                return Storage::disk('public')->url($rawCv);
+            }
+        }
+
+        $profile = $this->relationLoaded('studentProfile')
+            ? $this->studentProfile
+            : $this->studentProfile()->first();
+        $legacy = $profile?->resume_path;
+        if (! is_string($legacy) || $legacy === '' || str_contains($legacy, '..')) {
+            return null;
+        }
+
+        $relative = ltrim(str_replace('\\', '/', $legacy), '/');
+        $full = realpath(public_path($relative));
+        $publicRoot = realpath(public_path());
+        if ($full === false || $publicRoot === false || ! str_starts_with($full, $publicRoot) || ! is_file($full)) {
+            return null;
+        }
+
+        return asset($relative);
+    }
+
+    /**
+     * Minimum content required before generating a PDF CV (avoids empty PDFs).
+     */
+    public function hasCvGenerationPayload(): bool
+    {
+        $this->loadMissing(['portfolios', 'educations', 'skills']);
+
+        $hasName = trim((string) ($this->firstname ?? '')) !== '' || trim((string) ($this->lastname ?? '')) !== '';
+        if (! $hasName) {
+            return false;
+        }
+
+        $hasBio = trim(strip_tags((string) ($this->about ?? ''))) !== '';
+        $hasSkills = $this->skills->isNotEmpty()
+            || (is_array($this->skill_ids) && count(array_filter($this->skill_ids)) > 0);
+        $hasEdu = $this->educations->isNotEmpty();
+        $hasPortfolio = $this->portfolios->isNotEmpty();
+
+        return $hasBio || $hasSkills || $hasEdu || $hasPortfolio;
     }
 
 }

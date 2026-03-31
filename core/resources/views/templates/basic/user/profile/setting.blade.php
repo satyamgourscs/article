@@ -108,11 +108,13 @@
                                     @endforeach
                                 </div>
                                 <div class="form-group mt-4">
-                                    <label class="form--label">@lang('Resume (PDF, optional)')</label>
-                                    <input type="file" name="resume" class="form-control form--control" accept=".pdf,application/pdf">
-                                    <small class="text-muted">@lang('Max 5 MB. Leave empty to keep current file.')</small>
-                                    @if ($user->studentProfile && $user->studentProfile->resume_path)
-                                        <p class="small mt-2 mb-0">@lang('Current'): <strong>{{ basename($user->studentProfile->resume_path) }}</strong></p>
+                                    <label class="form--label">@lang('CV / Resume (PDF, optional)')</label>
+                                    <input type="file" name="cv" class="form-control form--control" accept=".pdf,application/pdf">
+                                    <small class="text-muted">@lang('Max 5 MB. Leave empty to keep current file. Stored securely for firms when you apply.')</small>
+                                    @if ($user->cv_public_url)
+                                        <p class="small mt-2 mb-0">@lang('Current CV'):
+                                            <a href="{{ $user->cv_public_url }}" target="_blank" rel="noopener noreferrer"><strong>@lang('View')</strong></a>
+                                        </p>
                                     @endif
                                 </div>
 

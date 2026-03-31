@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\OtpAuthController;
 use App\Http\Controllers\Auth\SignupController;
+use App\Http\Controllers\BankController;
+use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Models\Frontend;
@@ -158,6 +160,9 @@ Route::controller('JobPortalController')->group(function () {
     Route::post('job/apply', 'apply')->middleware('auth')->name('jobs.portal.apply');
 });
 
+Route::get('student/profile', [UserController::class, 'studentProfileLanding']);
+Route::get('student/profile/{id}', [UserController::class, 'profileView'])->whereNumber('id')->name('user.profile');
+
 Route::controller('SiteController')->group(function () {
 
     Route::get('talents', 'allFreelancers')->name('all.freelancers');
@@ -193,4 +198,4 @@ Route::get('/dashboard', function () {
     }
     return redirect('/login');
 });
-Route::post('/bank-details/save',[AppHttpControllersBankController::class,'save'])->middleware('auth');
+Route::post('/bank-details/save', [BankController::class, 'save'])->middleware('auth');

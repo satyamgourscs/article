@@ -15,6 +15,7 @@ use App\Rules\FileTypeValidate;
 use App\Support\SafeSchema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
@@ -258,9 +259,16 @@ class ProfileController extends Controller
             'education_status' => 'required|string|in:'.$statusKeys,
             'preferred_domains' => 'nullable|array',
             'preferred_domains.*' => 'in:'.$domainKeys,
+            'cv' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
             'resume' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
             'image' => [$imageRule, new FileTypeValidate(['jpg', 'jpeg', 'png'])],
         ]);
+
+        if ($request->hasFile('cv') && $request->hasFile('resume')) {
+            $notify[] = ['error', __('Please upload either CV or resume, not both.')];
+
+            return back()->withNotify($notify)->withInput();
+        }
 
         $user = auth()->user();
 
@@ -307,9 +315,27 @@ class ProfileController extends Controller
         $existing = $user->studentProfile;
         $oldResume = $existing?->resume_path;
         $resumePath = $oldResume;
-        if ($request->hasFile('resume')) {
+
+        $uploadFile = $request->file('cv') ?? $request->file('resume');
+
+        if ($uploadFile && SafeSchema::hasColumn('users', 'cv')) {
             try {
-                $resumePath = fileUploader($request->resume, getFilePath('studentResume'), null, $oldResume);
+                $oldDiskCv = $user->getOriginal('cv');
+                $stored = $uploadFile->store('cv', 'public');
+                if ($oldDiskCv && is_string($oldDiskCv) && str_starts_with($oldDiskCv, 'cv/')) {
+                    Storage::disk('public')->delete($oldDiskCv);
+                }
+                $user->cv = $stored;
+                $user->save();
+                $resumePath = null;
+            } catch (\Throwable) {
+                $notify[] = ['error', __('Could not upload CV. Please use a PDF under 5 MB.')];
+
+                return back()->withNotify($notify)->withInput();
+            }
+        } elseif ($uploadFile) {
+            try {
+                $resumePath = fileUploader($uploadFile, getFilePath('studentResume'), null, $oldResume);
             } catch (\Exception $exp) {
                 $notify[] = ['error', __('Could not upload resume. Please use a PDF under 5 MB.')];
 

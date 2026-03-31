@@ -177,6 +177,30 @@
                                 </div>
                             </a>
                         </div>
+                        <div class="col-xxl-3 col-sm-6 col-xsm-6">
+                            @if (auth()->user()->plan != 'free')
+                                <a class="dashboard-widget" href="{{ route('user.cv.generate') }}">
+                                    <div class="dashboard-widget__icon flex-center">
+                                        <i class="las la-file-pdf"></i>
+                                    </div>
+                                    <div class="dashboard-widget__content">
+                                        <span class="dashboard-widget__text"> @lang('Generate CV (PDF)') </span>
+                                        <h5 class="dashboard-widget__number"><i class="las la-download"></i></h5>
+                                    </div>
+                                </a>
+                            @else
+                                <div class="dashboard-widget" style="opacity:0.55;pointer-events:none;cursor:not-allowed;"
+                                    title="@lang('Upgrade plan to generate CV')">
+                                    <div class="dashboard-widget__icon flex-center">
+                                        <i class="las la-file-pdf"></i>
+                                    </div>
+                                    <div class="dashboard-widget__content">
+                                        <span class="dashboard-widget__text"> @lang('Generate CV') </span>
+                                        <h5 class="dashboard-widget__number text-muted small">@lang('Paid plan')</h5>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
                     @endif
                 </div>
                 <!-- Dashboard Card End -->

@@ -68,7 +68,7 @@ class PostedJobController extends Controller
 
         $this->authorizePostedJob($postedJob);
         $pageTitle = $postedJob->title;
-        $postedJob->load(['applications.user']);
+        $postedJob->load(['applications.user.studentProfile']);
 
         return view('Template::job_portal.firm.show', compact('pageTitle', 'postedJob'));
     }

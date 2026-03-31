@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.3",
         "authorizenet/authorizenet": "^2.0",
+        "barryvdh/laravel-dompdf": "^3.1",
         "btcpayserver/btcpayserver-greenfield-php": "^2.3",
         "coingate/coingate-php": "^4.1",
         "ezyang/htmlpurifier": "^4.17",
@@ -29,7 +30,6 @@
         "stripe/stripe-php": "^13.13",
         "twilio/sdk": "^7.16",
         "vonage/client": "^4.0"
-        
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",

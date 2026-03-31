@@ -10,7 +10,7 @@ use App\Models\DeviceToken;
 use App\Models\JobApplication;
 use App\Models\Project;
 use App\Models\Transaction;
-use App\Models\User as UserModel;
+use App\Models\User;
 use App\Services\OtpAuthService;
 use App\Support\SafeSchema;
 use Carbon\Carbon;
@@ -34,7 +34,7 @@ class UserController extends Controller
         }
 
         $referralsCount = SafeSchema::usersReferralReady()
-            ? UserModel::where('referred_by_user_id', $user->id)->count()
+            ? User::where('referred_by_user_id', $user->id)->count()
             : 0;
 
         $referralShareUrl = (SafeSchema::usersReferralReady() && ! empty($user->referral_code))
@@ -302,5 +302,59 @@ class UserController extends Controller
         header('Content-Disposition: attachment; filename="' . $title);
         header("Content-Type: " . $mimetype);
         return readfile($filePath);
+    }
+
+    /**
+     * Logged-in student: /student/profile → profile settings.
+     */
+    public function studentProfileLanding()
+    {
+        if (! auth()->check()) {
+            return redirect()->route('user.login');
+        }
+
+        return redirect()->route('user.profile.setting');
+    }
+
+    /**
+     * Public URL used by firms and talent cards. Buyers may only open students who applied to their jobs.
+     * Other visitors may only be redirected to the public talent page when the student is listable there.
+     */
+    public function profileView(int|string $id)
+    {
+        $id = (int) $id;
+
+        if (auth()->check() && (int) auth()->id() === $id) {
+            return redirect()->route('user.profile.setting');
+        }
+
+        $user = User::query()
+            ->with(['portfolios', 'educations', 'skills', 'studentProfile'])
+            ->findOrFail($id);
+
+        $buyer = auth()->guard('buyer')->user();
+        if ($buyer) {
+            $buyerId = (int) $buyer->id;
+            $allowed = JobApplication::query()
+                ->where('user_id', $user->id)
+                ->whereHas('job', function ($q) use ($buyerId) {
+                    $q->where('buyer_id', $buyerId);
+                })
+                ->exists();
+
+            if (! $allowed) {
+                abort(403, __('You can only open profiles of students who applied to your jobs.'));
+            }
+
+            $pageTitle = __('Applicant profile');
+
+            return view('Template::student.profile.view', compact('user', 'pageTitle'));
+        }
+
+        if ($user->username !== null && $user->username !== '' && User::active()->whereKey($user->id)->exists()) {
+            return redirect()->route('talent.explore', $user->username);
+        }
+
+        abort(403, __('This profile is not available.'));
     }
 }

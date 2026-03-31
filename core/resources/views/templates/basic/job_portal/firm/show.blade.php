@@ -26,6 +26,8 @@
                     <th>@lang('Student')</th>
                     <th>@lang('Applied')</th>
                     <th>@lang('Status')</th>
+                    <th>@lang('Profile')</th>
+                    <th>@lang('CV')</th>
                     <th>@lang('Action')</th>
                 </tr>
             </thead>
@@ -35,6 +37,18 @@
                         <td>{{ $application->user->fullname ?? $application->user->username }}</td>
                         <td>{{ showDateTime($application->applied_at) }}</td>
                         <td>{{ __($application->status) }}</td>
+                        <td>
+                            <a href="{{ url('/student/profile/' . $application->user_id) }}" class="btn btn--sm btn-outline--base"
+                                target="_blank" rel="noopener noreferrer">@lang('View')</a>
+                        </td>
+                        <td>
+                            @if ($application->user->cv_public_url)
+                                <a href="{{ $application->user->cv_public_url }}" target="_blank" rel="noopener noreferrer"
+                                    class="btn btn--sm btn--base">@lang('View CV')</a>
+                            @else
+                                <span class="text-muted small">@lang('No CV')</span>
+                            @endif
+                        </td>
                         <td>
                             <form method="POST"
                                 action="{{ route('buyer.firm.posted_jobs.application.status', [$postedJob, $application]) }}"
@@ -55,7 +69,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-muted">@lang('No applications yet.')</td>
+                        <td colspan="6" class="text-muted">@lang('No applications yet.')</td>
                     </tr>
                 @endforelse
             </tbody>
