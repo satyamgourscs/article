@@ -487,6 +487,45 @@ function referralSignupBonusAmount(): float
 
     return max(0, (float) config('referral.signup_bonus_amount', 0));
 }
+
+/**
+ * Dashboard referral promo block (image + copy from general_settings).
+ *
+ * @return array{image: string, description: string}
+ */
+function referralContent(): array
+{
+    $filename = '';
+    try {
+        if (\App\Support\SafeSchema::hasColumn('general_settings', 'referral_image')) {
+            $filename = trim((string) (gs('referral_image') ?? ''));
+        }
+    } catch (\Throwable) {
+    }
+
+    $rel = $filename !== '' ? getFilePath('referral').'/'.$filename : '';
+    $image = asset('assets/images/default.png');
+    if (file_exists(public_path('assets/default-referral.png'))) {
+        $image = asset('assets/default-referral.png');
+    }
+    if ($rel !== '' && file_exists(public_path($rel))) {
+        $image = getImage($rel, getFileSize('referral'));
+    }
+
+    $description = '';
+    try {
+        if (\App\Support\SafeSchema::hasColumn('general_settings', 'referral_description')) {
+            $description = (string) (gs('referral_description') ?? '');
+        }
+    } catch (\Throwable) {
+    }
+
+    return [
+        'image' => $image,
+        'description' => $description,
+    ];
+}
+
 function isImage($string)
 {
     $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
@@ -743,16 +782,11 @@ function formatTimeDiff($createdAt, $uploadedAt)
 
     function calculateProfileCompletion($user)
     {
-        $weights = [
-            'skills' => $user->skills->count() >= 3 ? 20 : ($user->skills->count() > 0 ? 10 : 0),
-            'settings' => ($user->image ? 10 : 0) + ($user->bio ? 5 : 0) + ($user->language ? 5 : 0),
-            'education' => $user->educations->count() >= 2 ? 20 : ($user->educations->count() > 0 ? 10 : 0),
-            'portfolio' => $user->portfolios->count() >= 2 ? 20 : ($user->portfolios->count() > 0 ? 10 : 0),
-            'kyc' => $user->kv ? 10 : 0,
-            'tv' => $user->tv ? 10 : 0,
-        ];
+        if ($user instanceof \App\Models\User) {
+            return (int) $user->profile_completion;
+        }
 
-        return round(array_sum($weights), 2);
+        return 0;
     }
 
 

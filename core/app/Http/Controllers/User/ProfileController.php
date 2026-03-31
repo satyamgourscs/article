@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\GoogleAuthenticator;
+use App\Models\BankDetail;
 use App\Models\Education;
 use App\Models\Portfolio;
 use App\Models\Skill;
@@ -104,6 +105,8 @@ class ProfileController extends Controller
 
         $selectedSkillKeys = array_flip(array_map('mb_strtolower', $selectedSkills));
 
+        session(['profile_wizard_last_step' => 2]);
+
         return view('Template::user.profile.skill', compact(
             'pageTitle',
             'user',
@@ -191,7 +194,7 @@ class ProfileController extends Controller
         }
         $user->studentProfile->update($spData);
 
-        $notify[] = ['success', __('Skills saved. Add work samples or publish when ready.')];
+        $notify[] = ['success', __('Skills saved. Continue to work samples.')];
 
         return to_route('user.profile.portfolio')->withNotify($notify);
     }
@@ -212,6 +215,8 @@ class ProfileController extends Controller
         $qualifications = config('student_profile.qualifications', []);
         $educationStatuses = config('student_profile.education_statuses', []);
         $domains = config('student_profile.domains', []);
+
+        session(['profile_wizard_last_step' => 1]);
 
         return view('Template::user.profile.setting', compact(
             'pageTitle',
@@ -336,12 +341,43 @@ class ProfileController extends Controller
         $pageTitle = __('Education history');
         $user = auth()->user();
         $educations = $user->educations;
+        session(['profile_wizard_last_step' => 4]);
 
         return view('Template::user.profile.education', compact('pageTitle', 'educations'));
     }
 
     public function submitEducations(Request $request)
     {
+        $user = auth()->user();
+        $rows = $request->input('education', []);
+        if (! is_array($rows)) {
+            $rows = [];
+        }
+        $rows = array_values($rows);
+
+        $filledRows = [];
+        foreach ($rows as $educationData) {
+            if (! is_array($educationData)) {
+                continue;
+            }
+            $school = trim((string) ($educationData['school'] ?? ''));
+            if ($school === '') {
+                continue;
+            }
+            $filledRows[] = $educationData;
+        }
+
+        if (count($filledRows) === 0) {
+            $user->educations()->delete();
+            $user->step = max((int) $user->step, 4);
+            $user->save();
+            $notify[] = ['success', __('Education skipped. Continue to bank details when ready.')];
+
+            return redirect()->route('user.profile.bank')->withNotify($notify);
+        }
+
+        $request->merge(['education' => $filledRows]);
+
         $request->validate([
             'education.*.school' => 'required|string|max:255',
             'education.*.year_from' => 'nullable|string',
@@ -353,23 +389,18 @@ class ProfileController extends Controller
             'education.*.school.required' => 'The school name is required.',
         ]);
 
-        $user = auth()->user();
         $updatedIds = [];
 
-        if (! $request->education || empty($request->education)) {
-            return back()->with('error', 'Please provide your education qualifications.');
-        }
-
-        foreach ($request->education as $educationData) {
+        foreach ($filledRows as $educationData) {
             if (! empty($educationData['id'])) {
                 $education = $user->educations()->find($educationData['id']);
                 if ($education) {
                     $education->school = $educationData['school'];
-                    $education->year_from = $educationData['year_from'];
-                    $education->year_to = $educationData['year_to'];
-                    $education->degree = $educationData['degree'];
-                    $education->area_of_study = $educationData['area_of_study'];
-                    $education->description = $educationData['description'];
+                    $education->year_from = $educationData['year_from'] ?? null;
+                    $education->year_to = $educationData['year_to'] ?? null;
+                    $education->degree = $educationData['degree'] ?? null;
+                    $education->area_of_study = $educationData['area_of_study'] ?? null;
+                    $education->description = $educationData['description'] ?? null;
                     $education->save();
                     $updatedIds[] = $education->id;
                 }
@@ -377,11 +408,11 @@ class ProfileController extends Controller
                 $education = new Education;
                 $education->user_id = $user->id;
                 $education->school = $educationData['school'];
-                $education->year_from = $educationData['year_from'];
-                $education->year_to = $educationData['year_to'];
-                $education->degree = $educationData['degree'];
-                $education->area_of_study = $educationData['area_of_study'];
-                $education->description = $educationData['description'];
+                $education->year_from = $educationData['year_from'] ?? null;
+                $education->year_to = $educationData['year_to'] ?? null;
+                $education->degree = $educationData['degree'] ?? null;
+                $education->area_of_study = $educationData['area_of_study'] ?? null;
+                $education->description = $educationData['description'] ?? null;
                 $education->save();
                 $updatedIds[] = $education->id;
             }
@@ -389,10 +420,8 @@ class ProfileController extends Controller
 
         $user->educations()->whereNotIn('id', $updatedIds)->delete();
 
-        if ($user->step < 3) {
-            $user->step = 3;
-            $user->save();
-        }
+        $user->step = max((int) $user->step, 4);
+        $user->save();
 
         $notify[] = ['success', __('Education updated successfully.')];
 
@@ -401,27 +430,32 @@ class ProfileController extends Controller
 
     public function bankDetails()
     {
-        if (! SafeSchema::hasColumn('users', 'upi_id')) {
-            $notify[] = ['warning', __('Bank details are not available yet. Ask the administrator to run database migrations (php artisan migrate).')];
+        if (! User::studentBankFormSupported()) {
+            $notify[] = ['info', __('Bank payout feature is not enabled on this system.')];
 
             return to_route('user.home')->withNotify($notify);
         }
 
         $pageTitle = __('Bank details');
         $user = auth()->user();
+        $wizardStep = 5;
+        session(['profile_wizard_last_step' => 5]);
+        $bankDisplay = $this->bankFormDisplayValues($user);
 
-        return view('Template::user.profile.bank', compact('pageTitle', 'user'));
+        return view('Template::user.profile.bank', compact('pageTitle', 'user', 'wizardStep', 'bankDisplay'));
     }
 
     public function submitBankDetails(Request $request)
     {
-        if (! SafeSchema::hasColumn('users', 'upi_id')) {
-            $notify[] = ['warning', __('Bank details are not available yet. Ask the administrator to run database migrations (php artisan migrate).')];
+        if (! User::studentBankFormSupported()) {
+            $notify[] = ['info', __('Bank payout feature is not enabled on this system.')];
 
             return to_route('user.home')->withNotify($notify);
         }
 
         $request->validate([
+            'step' => 'nullable|integer|in:5',
+            'wizard_action' => 'nullable|string|in:save_bank,publish,draft',
             'bank_name' => 'nullable|string|max:191',
             'bank_account_number' => 'nullable|string|max:64',
             'account_number' => 'nullable|string|max:64',
@@ -435,38 +469,45 @@ class ProfileController extends Controller
         $clean = static fn ($v) => ($v === null || $v === '' || trim((string) $v) === '') ? null : trim((string) $v);
 
         $user = auth()->user();
-        $user->bank_name = $clean($request->bank_name);
-        $acct = $clean($request->bank_account_number);
-        if ($acct === null) {
-            $acct = $clean($request->account_number);
+        $wroteToUsersTable = $this->applyStudentBankFieldsToUser($user, $request, $clean);
+        if (! $wroteToUsersTable && SafeSchema::hasTable('bank_details')) {
+            $this->persistStudentBankDetailRow($user, $request, $clean);
         }
-        $user->bank_account_number = $acct;
-        if (SafeSchema::hasColumn('users', 'account_number')) {
-            $user->account_number = $acct;
+
+        $action = $request->input('wizard_action', 'save_bank');
+        $step = (int) $request->input('step', 0);
+
+        if ($action === 'publish') {
+            if ($step !== 5) {
+                $notify[] = ['error', __('Invalid publish request.')];
+
+                return back()->withNotify($notify)->withInput();
+            }
+            $user->work_profile_complete = Status::YES;
+            if (SafeSchema::hasColumn('users', 'profile_complete')) {
+                $user->profile_complete = Status::YES;
+            }
+            $notify[] = ['success', __('Profile published. You are visible to firms.')];
+        } elseif ($action === 'draft') {
+            $user->work_profile_complete = Status::NO;
+            if (SafeSchema::hasColumn('users', 'profile_complete')) {
+                $user->profile_complete = Status::NO;
+            }
+            $notify[] = ['success', __('Profile set to draft.')];
+        } else {
+            $notify[] = ['success', __('Bank details saved.')];
         }
-        $ifscRaw = $clean($request->bank_ifsc);
-        if ($ifscRaw === null) {
-            $ifscRaw = $clean($request->ifsc_code);
+
+        if ($user->step < 5) {
+            $user->step = 5;
         }
-        $ifsc = $ifscRaw !== null ? strtoupper($ifscRaw) : null;
-        $user->bank_ifsc = $ifsc;
-        if (SafeSchema::hasColumn('users', 'ifsc_code')) {
-            $user->ifsc_code = $ifsc;
-        }
-        $holder = $clean($request->bank_account_holder_name);
-        if ($holder === null) {
-            $holder = $clean($request->account_holder_name);
-        }
-        $user->bank_account_holder_name = $holder;
-        if (SafeSchema::hasColumn('users', 'account_holder_name')) {
-            $user->account_holder_name = $holder;
-        }
-        $user->upi_id = $clean($request->upi_id);
         $user->save();
 
-        $notify[] = ['success', __('Bank details saved.')];
+        if ($action === 'publish') {
+            return to_route('user.home')->withNotify($notify);
+        }
 
-        return to_route('user.profile.portfolio')->withNotify($notify);
+        return back()->withNotify($notify);
     }
 
     /**
@@ -483,6 +524,7 @@ class ProfileController extends Controller
 
         $pageTitle = __('Work samples');
         $portfolios = $user->portfolios()->paginate(getPaginate());
+        session(['profile_wizard_last_step' => 3]);
 
         return view('Template::user.profile.portfolio', compact('pageTitle', 'user', 'portfolios'));
     }
@@ -524,7 +566,7 @@ class ProfileController extends Controller
         $portfolio->description = $request->description;
         $portfolio->url = $request->project_url;
         if (SafeSchema::hasColumn('portfolios', 'skill_ids')) {
-            $portfolio->skill_ids = [];
+            $portfolio->skill_ids = json_encode($request->skill_ids ?? []);
         }
         if (! $portfolio->exists) {
             $portfolio->status = Status::ENABLE;
@@ -533,8 +575,8 @@ class ProfileController extends Controller
 
         if ($user->step < 4) {
             $user->step = 4;
-            $user->save();
         }
+        $user->save();
 
         $notify[] = ['success', $notification];
 
@@ -620,5 +662,124 @@ class ProfileController extends Controller
         }
 
         return back()->withNotify($notify);
+    }
+
+    /**
+     * Values for the bank form: users columns when present, else bank_details row.
+     *
+     * @return array{bank_name: string, bank_account_number: string, bank_ifsc: string, bank_account_holder_name: string, upi_id: string}
+     */
+    protected function bankFormDisplayValues(User $user): array
+    {
+        $bd = SafeSchema::hasTable('bank_details')
+            ? BankDetail::query()->where('buyer_id', $user->id)->first()
+            : null;
+
+        $pick = static function (User $user, string $column, mixed $fallback): string {
+            if (SafeSchema::hasColumn('users', $column)) {
+                return (string) ($user->{$column} ?? '');
+            }
+
+            return (string) ($fallback ?? '');
+        };
+
+        return [
+            'bank_name' => $pick($user, 'bank_name', $bd?->bank_name),
+            'bank_account_number' => $pick($user, 'bank_account_number', $bd?->account_number),
+            'bank_ifsc' => $pick($user, 'bank_ifsc', $bd?->ifsc),
+            'bank_account_holder_name' => $pick($user, 'bank_account_holder_name', $bd?->account_holder_name),
+            'upi_id' => $pick($user, 'upi_id', $bd?->upi_id),
+        ];
+    }
+
+    /**
+     * @param  callable(string|null|mixed): (string|null)  $clean
+     */
+    protected function applyStudentBankFieldsToUser(User $user, Request $request, callable $clean): bool
+    {
+        $wrote = false;
+
+        if (SafeSchema::hasColumn('users', 'bank_name')) {
+            $user->bank_name = $clean($request->bank_name);
+            $wrote = true;
+        }
+
+        $acct = $clean($request->bank_account_number);
+        if ($acct === null) {
+            $acct = $clean($request->account_number);
+        }
+        if (SafeSchema::hasColumn('users', 'bank_account_number')) {
+            $user->bank_account_number = $acct;
+            $wrote = true;
+        }
+        if (SafeSchema::hasColumn('users', 'account_number')) {
+            $user->account_number = $acct;
+            $wrote = true;
+        }
+
+        $ifscRaw = $clean($request->bank_ifsc);
+        if ($ifscRaw === null) {
+            $ifscRaw = $clean($request->ifsc_code);
+        }
+        $ifsc = $ifscRaw !== null ? strtoupper($ifscRaw) : null;
+        if (SafeSchema::hasColumn('users', 'bank_ifsc')) {
+            $user->bank_ifsc = $ifsc;
+            $wrote = true;
+        }
+        if (SafeSchema::hasColumn('users', 'ifsc_code')) {
+            $user->ifsc_code = $ifsc;
+            $wrote = true;
+        }
+
+        $holder = $clean($request->bank_account_holder_name);
+        if ($holder === null) {
+            $holder = $clean($request->account_holder_name);
+        }
+        if (SafeSchema::hasColumn('users', 'bank_account_holder_name')) {
+            $user->bank_account_holder_name = $holder;
+            $wrote = true;
+        }
+        if (SafeSchema::hasColumn('users', 'account_holder_name')) {
+            $user->account_holder_name = $holder;
+            $wrote = true;
+        }
+
+        if (SafeSchema::hasColumn('users', 'upi_id')) {
+            $user->upi_id = $clean($request->upi_id);
+            $wrote = true;
+        }
+
+        return $wrote;
+    }
+
+    /**
+     * @param  callable(string|null|mixed): (string|null)  $clean
+     */
+    protected function persistStudentBankDetailRow(User $user, Request $request, callable $clean): void
+    {
+        $acct = $clean($request->bank_account_number);
+        if ($acct === null) {
+            $acct = $clean($request->account_number);
+        }
+        $ifscRaw = $clean($request->bank_ifsc);
+        if ($ifscRaw === null) {
+            $ifscRaw = $clean($request->ifsc_code);
+        }
+        $ifsc = $ifscRaw !== null ? strtoupper($ifscRaw) : null;
+        $holder = $clean($request->bank_account_holder_name);
+        if ($holder === null) {
+            $holder = $clean($request->account_holder_name);
+        }
+
+        BankDetail::updateOrCreate(
+            ['buyer_id' => $user->id],
+            [
+                'bank_name' => $clean($request->bank_name),
+                'account_number' => $acct,
+                'ifsc' => $ifsc,
+                'account_holder_name' => $holder,
+                'upi_id' => $clean($request->upi_id),
+            ]
+        );
     }
 }

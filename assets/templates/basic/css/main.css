@@ -4277,18 +4277,6 @@ main {
   }
 }
 
-.breadcrumb::before {
-  position: absolute;
-  content: "";
-  left: 0;
-  top: 0;
-  background-color: #072C18;
-  opacity: 0.9;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
-
 .breadcrumb__title {
   margin-bottom: 4px;
   color: hsl(var(--white));

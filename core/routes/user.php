@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User as UserModel;
 use Illuminate\Support\Facades\Route;
 
 Route::namespace('User\Auth')->name('user.')->middleware('guest')->group(function () {
@@ -69,6 +70,18 @@ Route::middleware('auth')->name('user.')->group(function () {
 
             //Profile setting
             Route::controller('ProfileController')->group(function () {
+                Route::get('profile/{user?}', function (?int $user = null) {
+                    if ($user === null || (int) $user === (int) auth()->id()) {
+                        return redirect()->route('user.profile.setting');
+                    }
+                    $model = UserModel::query()->find($user);
+                    if (! $model || empty($model->username)) {
+                        abort(404);
+                    }
+
+                    return redirect()->route('talent.explore', $model->username);
+                })->whereNumber('user')->name('profile');
+
                 Route::get('change-password', 'changePassword')->name('change.password');
                 Route::post('change-password', 'submitPassword');
 

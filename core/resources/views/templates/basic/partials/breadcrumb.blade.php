@@ -1,7 +1,21 @@
 @php
-    $content = getContent('breadcrumb.content', true)->data_values;
+    $breadcrumbFilename = '';
+    if (\App\Support\SafeSchema::hasColumn('general_settings', 'breadcrumb_image')) {
+        $breadcrumbFilename = trim((string) (gs('breadcrumb_image') ?? ''));
+    }
+    $rel = $breadcrumbFilename !== '' ? getFilePath('breadcrumb').'/'.$breadcrumbFilename : '';
+    $defaultJpg = public_path('assets/images/default-breadcrumb.jpg');
+    if ($rel !== '' && file_exists(public_path($rel))) {
+        $breadcrumbBgUrl = getImage($rel, getFileSize('breadcrumb'));
+    } elseif (file_exists($defaultJpg)) {
+        $breadcrumbBgUrl = asset('assets/images/default-breadcrumb.jpg');
+    } else {
+        $breadcrumbBgUrl = asset('assets/images/default.png');
+    }
 @endphp
-<section class="breadcrumb bg-img" data-background-image="{{ frontendImage('breadcrumb', @$content->image, '1920x205') }}">
+<section class="breadcrumb breadcrumb-area"
+    style="background-image: url('{{ $breadcrumbBgUrl }}');">
+    <div class="breadcrumb-overlay" aria-hidden="true"></div>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-12">

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Constants\Status;
+use App\Support\SafeSchema;
 use App\Traits\GlobalStatus;
 use App\Traits\UserNotify;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -235,6 +236,133 @@ class User extends Authenticatable
     }
 
     /**
+     * Optional row in bank_details (legacy key name buyer_id often stores the same user id).
+     */
+    public function bankDetail()
+    {
+        return $this->hasOne(BankDetail::class, 'buyer_id', 'id');
+    }
+
+    /**
+     * Profile wizard / dashboard completion (0–100). Matches publish when profile_complete is set.
+     */
+    public function getProfileCompletionAttribute(): int
+    {
+        if ((int) $this->profile_complete === Status::YES) {
+            return 100;
+        }
+
+        $progress = 0;
+
+        $fn = trim((string) ($this->firstname ?? ''));
+        $ln = trim((string) ($this->lastname ?? ''));
+        $em = trim((string) ($this->email ?? ''));
+        if ($fn !== '' && $ln !== '' && $em !== '' && filter_var($em, FILTER_VALIDATE_EMAIL)) {
+            $progress += 20;
+        }
+
+        $skillIds = is_array($this->skill_ids) ? array_filter($this->skill_ids) : [];
+        if (count($skillIds) > 0) {
+            $progress += 20;
+        } elseif ($this->relationLoaded('skills')) {
+            if ($this->skills->isNotEmpty()) {
+                $progress += 20;
+            }
+        } elseif ($this->skills()->exists()) {
+            $progress += 20;
+        }
+
+        $portfolioCount = $this->portfolios_count ?? null;
+        if ($portfolioCount === null) {
+            $portfolioCount = $this->portfolios()->count();
+        }
+        if ($portfolioCount > 0) {
+            $progress += 20;
+        }
+
+        $educationCount = $this->educations_count ?? null;
+        if ($educationCount === null) {
+            $educationCount = $this->educations()->count();
+        }
+        if ($educationCount > 0) {
+            $progress += 20;
+        }
+
+        if ($this->hasProfileBankStepComplete()) {
+            $progress += 20;
+        }
+
+        return min(100, $progress);
+    }
+
+    /**
+     * Bank step for profile progress: users-table payout fields and/or bank_details row.
+     */
+    public function hasProfileBankStepComplete(): bool
+    {
+        if (SafeSchema::hasColumn('users', 'upi_id')
+            || SafeSchema::hasColumn('users', 'bank_account_number')
+            || SafeSchema::hasColumn('users', 'bank_name')) {
+            return $this->hasWithdrawalPayoutDetails();
+        }
+
+        if (SafeSchema::hasTable('bank_details')) {
+            try {
+                return $this->bankDetail()->exists();
+            } catch (\Throwable) {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Payout feature exists in schema (users columns and/or bank_details), not whether the user filled it.
+     */
+    public static function studentBankFormSupported(): bool
+    {
+        if (SafeSchema::hasTable('bank_details')) {
+            return true;
+        }
+
+        return SafeSchema::hasColumn('users', 'upi_id')
+            || SafeSchema::hasColumn('users', 'bank_account_number')
+            || SafeSchema::hasColumn('users', 'bank_name')
+            || SafeSchema::hasColumn('users', 'account_number')
+            || SafeSchema::hasColumn('users', 'bank_ifsc');
+    }
+
+    /**
+     * User has saved payout identifiers (dashboard / soft prompts). Safe if schema calls fail.
+     */
+    public function hasEnteredDashboardPayoutDetails(): bool
+    {
+        if (! self::studentBankFormSupported()) {
+            return false;
+        }
+
+        try {
+            $usersPayoutColumns = SafeSchema::hasColumn('users', 'upi_id')
+                || SafeSchema::hasColumn('users', 'account_number')
+                || SafeSchema::hasColumn('users', 'bank_account_number')
+                || SafeSchema::hasColumn('users', 'bank_name');
+
+            if ($usersPayoutColumns) {
+                return $this->hasWithdrawalPayoutDetails();
+            }
+
+            if (SafeSchema::hasTable('bank_details')) {
+                return $this->bankDetail()->exists();
+            }
+        } catch (\Throwable) {
+            return false;
+        }
+
+        return false;
+    }
+
+    /**
      * True when user can request withdrawal: UPI id and/or bank account + IFSC are set.
      */
     public function hasWithdrawalPayoutDetails(): bool
@@ -246,8 +374,30 @@ class User extends Authenticatable
 
         $account = trim((string) ($this->bank_account_number ?? $this->account_number ?? ''));
         $ifsc = trim((string) ($this->bank_ifsc ?? $this->ifsc_code ?? ''));
+        if ($account !== '' && $ifsc !== '') {
+            return true;
+        }
 
-        return $account !== '' && $ifsc !== '';
+        if (SafeSchema::hasTable('bank_details')) {
+            try {
+                $bd = $this->relationLoaded('bankDetail') ? $this->bankDetail : $this->bankDetail()->first();
+                if (! $bd) {
+                    return false;
+                }
+                $u = trim((string) ($bd->upi_id ?? ''));
+                if ($u !== '') {
+                    return true;
+                }
+                $a = trim((string) ($bd->account_number ?? ''));
+                $i = trim((string) ($bd->ifsc ?? ''));
+
+                return $a !== '' && $i !== '';
+            } catch (\Throwable) {
+                return false;
+            }
+        }
+
+        return false;
     }
 
 }

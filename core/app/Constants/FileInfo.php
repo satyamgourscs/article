@@ -104,6 +104,14 @@ class FileInfo
         $data['studentResume'] = [
             'path' => 'assets/files/student_resumes',
         ];
+        $data['referral'] = [
+            'path' => 'assets/images/referral',
+            'size' => '640x360',
+        ];
+        $data['breadcrumb'] = [
+            'path' => 'assets/images/breadcrumb',
+            'size' => '1920x205',
+        ];
 
         return $data;
     }

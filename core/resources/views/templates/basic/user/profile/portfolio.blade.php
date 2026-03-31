@@ -98,17 +98,11 @@
                     </div>
                     <div class="btn-wrapper">
                         <a href="{{ route('user.profile.skill') }}" class="btn btn-outline--dark">
-                            <i class="las la-angle-double-left"></i> @lang('Previous') </a>
-                        @if ($user->work_profile_complete)
-                            <button type="submit" class="btn btn--danger confirmationBtn" data-question="@lang('Are you sure to draft your profile?')"
-                                data-action="{{ route('user.profile.complete') }}"> @lang('Draft') <i
-                                    class="las la-pencil-ruler"></i></button>
-                        @else
-                            <button type="submit" class="btn btn--base confirmationBtn" data-question="@lang('Are you sure to publish your profile?')"
-                                data-action="{{ route('user.profile.complete') }}"> @lang('Publish') <i
-                                    class="las la-check-circle"></i></button>
-                        @endif
-
+                            <i class="las la-angle-double-left"></i> @lang('Previous')
+                        </a>
+                        <a href="{{ route('user.profile.education') }}" class="btn btn--base">
+                            @lang('Next: Education (optional)') <i class="las la-angle-double-right"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -186,7 +180,6 @@
         </div>
     </div>
 
-    <x-confirmation-modal />
 @endsection
 
 @push('script')

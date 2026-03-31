@@ -20,3 +20,8 @@ install_log.txt
 # Archives
 project.zip
 *.zip
+
+# User-uploaded media (local dev)
+/assets/images/user/portfolio/
+/assets/images/user/profile/
+/assets/files/

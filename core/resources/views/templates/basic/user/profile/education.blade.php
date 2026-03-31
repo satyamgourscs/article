@@ -72,10 +72,12 @@
                                 </div>
 
                                 <div class="btn-wrapper">
-                                    <a href="{{ route('user.profile.skill') }}" class="btn btn-outline--dark">
-                                        <i class="las la-angle-double-left"></i> @lang('Previous') </a>
-                                    <button type="submit" class="btn btn--dark"> @lang('Next') <i
-                                            class="las la-angle-double-right"></i></button>
+                                    <a href="{{ route('user.profile.portfolio') }}" class="btn btn-outline--dark">
+                                        <i class="las la-angle-double-left"></i> @lang('Previous')
+                                    </a>
+                                    <button type="submit" class="btn btn--dark">
+                                        @lang('Next: Bank details') <i class="las la-angle-double-right"></i>
+                                    </button>
                                 </div>
                             </form>
                         </div>

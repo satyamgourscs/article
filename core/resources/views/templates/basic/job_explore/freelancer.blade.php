@@ -9,7 +9,7 @@
     @endphp
 
     <div class="bid-item">
-        <a href="{{ route('talent.explore', $freelancer->username) }}" class="bid-item__thumb">
+        <a href="{{ url('/student/profile/' . $freelancer->id) }}" class="bid-item__thumb">
             <img src="{{ getImage(getFilePath('userProfile') . '/' . $freelancer->image, avatar: true) }}" alt="">
         </a>
         <div class="bid-item__content">
@@ -17,7 +17,7 @@
                 <div class="w-100">
                     <div class="d-flex justify-content-between mx-auto align-items-center">
                         <p class="bid-item__name mb-0"> {{ __($freelancer->fullname) }}</p>
-                        <a href="{{ route('talent.explore', $freelancer->username) }}" class="btn btn--base btn--xsm">@lang('View Profile')</a>
+                        <a href="{{ url('/student/profile/' . $freelancer->id) }}" class="btn btn--base btn--xsm">@lang('View Profile')</a>
                     </div>
                     <div class="d-flex aligns-items-center gap-2 justify-content-start flex-wrap my-2">
                         <div class="location">

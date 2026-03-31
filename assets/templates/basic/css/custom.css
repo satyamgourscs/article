@@ -866,3 +866,30 @@ span.select2-selection.select2-selection--single:focus-visible {
     max-width: none;
   }
 }
+
+/* Breadcrumb: dynamic background + theme-tinted overlay (see partials/breadcrumb.blade.php) */
+.breadcrumb.breadcrumb-area {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.breadcrumb.breadcrumb-area .container {
+  position: relative;
+  z-index: 2;
+}
+
+.breadcrumb-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    rgba(var(--theme-color-rgb), 0.7),
+    rgba(var(--theme-color-rgb), 0.7)
+  );
+}

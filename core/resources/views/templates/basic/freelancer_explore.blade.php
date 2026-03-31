@@ -240,7 +240,7 @@
                                                     @endforeach
                                                 </ul>
                                                 <div class="freelancer-item__btn">
-                                                    <a href="{{ route('talent.explore', $user->username) }}"
+                                                    <a href="{{ url('/student/profile/' . $user->id) }}"
                                                         class="btn--base btn btn--sm"> @lang('View Profile')
                                                     </a>
                                                 </div>

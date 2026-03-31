@@ -30,7 +30,7 @@
   
       @endif
         <ul class="skill-list">
-            @foreach ($freelancer->skills as $skill)
+            @foreach ($freelancer->skills ?? [] as $skill)
                 <li class="skill-list__item">
                     <span class="skill-list__link">{{ __($skill->name) }}</span>
                 </li>
@@ -38,7 +38,7 @@
         </ul>
 
         <div class="freelancer-item__btn">
-            <a href="{{ route('talent.explore', $freelancer->username) }}" class="btn--base btn btn--sm">
+            <a href="{{ url('/student/profile/' . $freelancer->id) }}" class="btn--base btn btn--sm">
                 @lang('View Profile')
             </a>
         </div>

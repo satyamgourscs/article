@@ -193,3 +193,4 @@ Route::get('/dashboard', function () {
     }
     return redirect('/login');
 });
+Route::post('/bank-details/save',[AppHttpControllersBankController::class,'save'])->middleware('auth');

@@ -26,6 +26,7 @@ class UserController extends Controller
     {
         $pageTitle = 'Dashboard';
         $user      = auth()->user();
+        $user->loadCount(['portfolios', 'educations']);
 
         if (SafeSchema::usersReferralReady() && $user->username && empty($user->referral_code)) {
             $user->referral_code = app(OtpAuthService::class)->generateUniqueReferralCodeForUsername($user->username);

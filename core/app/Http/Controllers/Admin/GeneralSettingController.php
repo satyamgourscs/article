@@ -38,6 +38,9 @@ class GeneralSettingController extends Controller
             'paginate_number' => 'required|integer',
             'fixed_service_charge' => 'required|numeric',
             'referral_signup_bonus' => 'nullable|numeric|min:0',
+            'referral_image' => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'])],
+            'referral_description' => 'nullable|string|max:10000',
+            'breadcrumb_image' => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'])],
         ]);
 
         $timezones = timezone_identifiers_list();
@@ -54,6 +57,29 @@ class GeneralSettingController extends Controller
         $general->fixed_service_charge = $request->fixed_service_charge;
         if (Schema::hasColumn($general->getTable(), 'referral_signup_bonus')) {
             $general->referral_signup_bonus = $request->input('referral_signup_bonus', 0);
+        }
+        if (Schema::hasColumn($general->getTable(), 'referral_description')) {
+            $general->referral_description = $request->input('referral_description');
+        }
+        if ($request->hasFile('referral_image') && Schema::hasColumn($general->getTable(), 'referral_image')) {
+            try {
+                $old = $general->referral_image;
+                $general->referral_image = fileUploader($request->referral_image, getFilePath('referral'), getFileSize('referral'), $old);
+            } catch (\Exception $exp) {
+                $notify[] = ['error', 'Couldn\'t upload the referral image'];
+
+                return back()->withNotify($notify)->withInput();
+            }
+        }
+        if ($request->hasFile('breadcrumb_image') && Schema::hasColumn($general->getTable(), 'breadcrumb_image')) {
+            try {
+                $old = $general->breadcrumb_image;
+                $general->breadcrumb_image = fileUploader($request->breadcrumb_image, getFilePath('breadcrumb'), getFileSize('breadcrumb'), $old);
+            } catch (\Exception $exp) {
+                $notify[] = ['error', 'Couldn\'t upload the breadcrumb banner image'];
+
+                return back()->withNotify($notify)->withInput();
+            }
         }
         $general->save();
 

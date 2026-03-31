@@ -28,11 +28,20 @@
                 </div>
             @endif
             @if (\App\Support\SafeSchema::usersReferralReady() && $user->referral_code)
+                @php
+                    $referralUi = referralContent();
+                @endphp
                 <div class="col-12">
                     <div class="card custom--card">
                         <div class="card-body">
                             <h5 class="mb-2"><i class="las la-gift text--base"></i> @lang('Refer & Earn')</h5>
-                            @if (referralSignupBonusAmount() > 0)
+                            <div class="mb-3 text-center text-md-start">
+                                <img src="{{ $referralUi['image'] }}" alt="" class="img-fluid rounded referral-dashboard-img"
+                                    style="max-height: 200px; object-fit: contain;">
+                            </div>
+                            @if (filled($referralUi['description']))
+                                <p class="text-muted small mb-3">{!! nl2br(e($referralUi['description'])) !!}</p>
+                            @elseif (referralSignupBonusAmount() > 0)
                                 <p class="text-muted small mb-3">
                                     @lang('Share your code or link. When someone completes student signup with it, you receive :amount.', ['amount' => showAmount(referralSignupBonusAmount())])
                                 </p>
@@ -183,17 +192,39 @@
 
                     </div>
 
-                    <div class="progress-container">
+                    <div class="progress-container" data-profile-completion="{{ (int) auth()->user()->profile_completion }}">
                         <div class="percent">
                             <svg class="circle" width="80" height="80">
                                 <circle class="first" cx="40" cy="40" r="35"></circle> <!-- Outer circle (white) -->
-                                <circle class="second" style="--percent: {{ $profileCompletion }}" cx="40" cy="40" r="35"></circle> <!-- Progress circle -->
+                                <circle class="second" style="--percent: {{ (int) auth()->user()->profile_completion }}" cx="40" cy="40" r="35"></circle> <!-- Progress circle -->
                             </svg>
                         </div>
                         <div class="percentag">
-                            {{ $profileCompletion }}%
+                            {{ (int) auth()->user()->profile_completion }}%
                         </div>
                     </div>
+                    @php
+                        $dashboardUser = auth()->user();
+                        $isSystemSupported = \App\Models\User::studentBankFormSupported();
+                        $hasUserBank = false;
+                        try {
+                            if ($isSystemSupported) {
+                                $hasUserBank = $dashboardUser->hasEnteredDashboardPayoutDetails();
+                            }
+                        } catch (\Throwable $e) {
+                            $hasUserBank = false;
+                        }
+                    @endphp
+                    @if (! $isSystemSupported)
+                        <div class="alert alert--info alert-sm text-start mt-3 mb-0" role="status">
+                            <small>@lang('Bank payout feature is not enabled on this system.')</small>
+                        </div>
+                    @elseif (! $hasUserBank)
+                        <p class="text-muted small mt-3 mb-0">
+                            @lang('Add your bank details to receive payouts.')
+                            <a class="d-block mt-1 text-decoration-underline" href="{{ route('user.profile.bank') }}">@lang('Profile → Bank details')</a>
+                        </p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -536,8 +567,9 @@
                 modal.modal('show');
             });
 
-            const $progressBar = $('.progress-container svg circle:last-of-type');
-            const $progressText = $('.percentag');
+            const $progressWrap = $('.progress-container');
+            const $progressBar = $progressWrap.find('svg circle:last-of-type');
+            const $progressText = $progressWrap.find('.percentag');
 
             // Get the radius of the circle (in this case, 35px)
             const radius = parseFloat($progressBar.attr('r')); // Use the actual radius of the circle
@@ -549,8 +581,12 @@
             // Set the initial stroke-dashoffset to start the circle from empty
             $progressBar.css('stroke-dashoffset', circumference);
 
-            // Get the percentage value (use custom property)
-            const percentage = $progressBar.css('--percent'); // Percentage from the inline style or CSS variable
+            let percentage = parseInt($progressWrap.attr('data-profile-completion'), 10);
+            if (!Number.isFinite(percentage)) {
+                const raw = ($progressBar.attr('style') || '').match(/--percent:\s*(\d+)/);
+                percentage = raw ? parseInt(raw[1], 10) : 0;
+            }
+            percentage = Math.min(100, Math.max(0, percentage));
 
             // Animate the progress bar
             $({

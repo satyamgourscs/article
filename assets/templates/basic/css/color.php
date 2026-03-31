@@ -55,6 +55,22 @@ function hexToHsl($hex)
     $hsl['l']   = $lightness;
     return $hsl;
 }
+
+function hexToRgbComma($hex)
+{
+    $hex = str_replace('#', '', $hex);
+    if (strlen($hex) === 3) {
+        $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+    }
+    if (strlen($hex) !== 6 || ! ctype_xdigit($hex)) {
+        return '51, 102, 153';
+    }
+    $r = hexdec(substr($hex, 0, 2));
+    $g = hexdec(substr($hex, 2, 2));
+    $b = hexdec(substr($hex, 4, 2));
+
+    return $r.', '.$g.', '.$b;
+}
 ?>
 
 :root{
@@ -64,4 +80,6 @@ function hexToHsl($hex)
 --base-two-h: <?php echo hexToHsl($secondColor)['h']; ?>;
 --base-two-s: <?php echo hexToHsl($secondColor)['s']; ?>%;
 --base-two-l: <?php echo hexToHsl($secondColor)['l']; ?>%;
+--theme-color: <?php echo htmlspecialchars($color, ENT_QUOTES, 'UTF-8'); ?>;
+--theme-color-rgb: <?php echo hexToRgbComma($color); ?>;
 }
